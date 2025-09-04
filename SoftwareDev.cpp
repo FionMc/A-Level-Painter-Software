@@ -1,16 +1,20 @@
 /******************************************************************************
 Program: SoftwareDev
 File: SoftwareDev.cpp
-Functions: main, AddBooking, AddCustomer, AddInvoice, AddQuote, AddStock, Backup, BubbleSort, ChangeBooking, ChangeCustomer,
+Functions: main, AddBooking, AddCustomer, AddInvoice, AddQuote, AddStock, AddStockQuote, Backup, BubbleSort, Buffer ChangeBooking, ChangeCustomer,
 ChangeCustomerMenu, ChangeInvoice, ChangeInvoiceMenu, ChangeQuote, ChangeQuoteMenu, ChangeStaff, ChangeStaffMenu, ChangeStock,
-ChangeStockMenu, ChgLoa, ChgPassword, ChgUsername, CHomeAdd, ClearSchedule, CName, CRef, CTelNum, CustomerMenu, Customers,
-DeleteBooking, DeleteCustomer, DeleteInvoice, DeleteQuote, DeleteStaff, DeleteStock, FindStock, ICustRef, IDates, InvoiceMenu,
-Invoices, IPay, IRef, IUnpaid, LocateCust, LocateCustInvoice, LowStock, MainMenu, PrintArray, QDay, QName, QRef, QuoteMenu,
-Quotes, ReadBackInvoiceFile, ReadBackLinksFile, ReadBackQuotesFile, ReadBackScheduleFile, ReadBackStaffFile, Recovery,
-ReWriteInvoiceFile, ReWriteLinksFile, ReWriteQuotesFile, ReWriteScheduleFile, ReWriteStaffFile, ReWriteStockFile, Schedule,
-ScheduleMenu, SHomeAdd, Staff, Staff1, Staff2, STelNum, StID, Stock, StockCalc, StockMenu, StPrice, StQuantity, StSortQ,
-ViewCustomer, ViewCustomerMenu, ViewInvoice, ViewInvoiceMenu, ViewQuote, ViewQuoteMenu, ViewSchedule, ViewScheduleMenu,
-ViewStaff, ViewStock, ViewStockMenu
+ChangeStockMenu, ChgLoa, ChgPassword, ChgUsername, CHomeAdd, ClearSchedule, CName,ConvertDate,ConvertDateNew CRef, CTelNum, CustomerMenu, Customers,
+DateOutput, DateVal,DateValBooking,DateValEnd,DateValInvoice,DateValStart,
+DeleteBooking, DeleteCustomer, DeleteInvoice, DeleteQuote, DeleteStaff, DeleteStock,EndRange,FindLoa, FindStock, ICustRef, IDates, InvoiceMenu,
+Invoices, IPay, IRef, IUnpaid, LocateCust, LocateCustInvoice, LocateCustIVal,LocateCustQVal,LocateCustSchedule,LocateQuote,LocateQuoteCheck,LocateQuoteWork,
+Login, MainMenu, Menu, PassLoginCheck, PasswordVal, PostCodeVal, PostCodeValCust, PresColour, PresType, PresVal, PresValFirst,
+PresValJ, PresValL, PresValLast, PresValO, PresValOne,PresValT,PresValTh,PresValThree,PresValTitle,PresValTr,PresValT, PrintArray, QCustRef,
+QDay, QPrice, QRef, QuoteMenu, QuotePriceRange, QuoteRefCheck, QuoteRefCheckBooking, Quotes, RangeCheck, RangeDate, RangeDay, RangePaid, RangePrice, RangeQuantity,
+RangeVolume, ReadBackInvoiceFile, ReadBackLinksFile, ReadBackQuotesFile, ReadBackScheduleFile, ReadBackStaffFile, ReadBackStockFile, Recovery,
+ReWriteInvoiceFile, ReWriteLinksFile, ReWriteQuotesFile, ReWriteScheduleFile, ReWriteStaffFile, ReWriteStockFile, Schedule, ScheduleCheck,
+ScheduleMenu, SHomeAdd, Staff, Staff1, Staff2, StaffMenu, StaffRefCheck, StartRange, STelNum, StID, Stock, StockCalc, StockMenu, StockVal, StPrice, StQuantity, StSortQ,
+SystemsClockBooking, SystemsClockValStart, TelVal, TelValCust, TelValE, TodaysWork, UniqueInvoice, UnwiueQ, UniqueStaff, UniqueStock, UniqueUser, UserLoginCheck, ValidNI,
+ViewCustomer, ViewCustomerMenu, ViewInvoice, ViewInvoiceMenu, ViewLowStock, ViewQuote, ViewQuoteMenu, ViewSchedule, ViewScheduleMenu, ViewStaff, ViewStock, ViewStockMenu, WhileMenu
 Description:
 Author: Fion McReynolds
 Environment: Borland C++ Pro 6.0
@@ -31,10 +35,7 @@ Revisions: 06/10/2023
 //---------------------------------------------------------------------------
 
 #pragma argsused
-int AddStockQuote(char quoteref[3]);
-int numofitems;
-int stock=0;
-int cost =0;
+
 int MainMenu();
 int Buffer(char bufferpassed[30],int length);
 // STAFF
@@ -78,7 +79,7 @@ char loa[10][2];
 int nsi;
 char nsc[3];
 int isfirsttime=1;
-int level=3;
+int level;
 
 int UniqueStaff(char staffbuffer[2]);
 int PresVal(char fnamestaff[15]);
@@ -130,7 +131,7 @@ typedef struct tag_cr{
 int custref;
 CUSTOMER_RECORD a_cust;
 
-
+int CustRefVal(char tempcust[3]);
 int PresValTitle(char title[10]);
 int PresValFirst(char fnamecust[15]);
 int PresValLast(char lnamecust[15]);
@@ -174,14 +175,17 @@ char mileage[10][4];
 char vat[10][5];
 char stockcost[10][5];
 char totalcost[10][5];
+int AddStockQuote(char quoteref[3]);
+
 int nqi;
 char nqc[3];
 
 int ReadBackQuotesFile();
 int ReWriteQuotesFile();
 
-int temprefi;
-char tempref[3];
+int numofitems;
+int stock=0;
+int cost =0;
 
 int UniqueQ(char quoteref[4]);
 int LocateCustQVal(char custno[3]);
@@ -190,14 +194,15 @@ int PresValJ(char mainjobdesc[50]);
 int PresValTr(char mileage[4]);
 int RangeDay(char numofdays[3]);
 int QuotePriceRange(char cost[5]);
-char temptime[40];
 
+char temptime[40];
 int yeart;
 char monthchar[4];
 int dayst;
 int rawtime;
 int monthval;
 int monthint;
+
 // INVOICES
 int Invoices();
 int InvoiceMenu();
@@ -288,6 +293,7 @@ int RangeVolume(char volume[4]);
 int PresType(char type[10]);
 int RangePrice(char stockprice[8]);
 int StockVal(char stockref[10]);
+int StockInformation(char stockref[10]);
 
 // SCHEDULE
 int Schedule();
@@ -343,14 +349,11 @@ char nlc[3];
 int ReadBackLinksFile();
 int ReWriteLinksFile();
 
-//While loop which allows the user to see the first output to the screen in the Login() function
+
 int main(int argc, char* argv[])
 {
-MainMenu();
-return 0;
-}
-/*
 int loginstatus;
+//While loop which allows the user to see the first output to the screen in the Login() function
 while(loginstatus != 2)
         {
         loginstatus = Login();
@@ -362,7 +365,8 @@ return 0;
 //Routine that either allows a user to enter their username and password to access the system or if its an empty file allows a new staff member to be added
 int Login()
 {
-cout<<"\nWelcome";             //Outputted to the screen - first thing a user will see
+//Outputted to the screen - first thing a user will see
+cout<<"Welcome";
 cout<<"\n*******";
 cout<<"\n";
 cout<<"\nPress enter to continue.";
@@ -373,15 +377,17 @@ ReadBackStaffFile();
 cin.get();
 
 // checking that the number of users isn't 0
+ //If number of users isnt 0, sets isfirsttime = 0 as it is not the first user on the system it then takes user to WhileMenu() which will allows them to enter their username and password
 if(nsi != 0)
         {
-        isfirsttime = 0;   //If number of users isnt 0, sets isfirsttime = 0 as it is not the first user on the system it then takes user to WhileMenu() which will allows them to enter their username and password
+        isfirsttime = 0;
         WhileMenu();
         } //endif
 
+ //If number of users is =0, sets isfirsttime=1 to show it is the first user on the system, it then tkes the user to the WhileMenu() where a new member of staff can be added
 if(nsi==0)
         {
-        WhileMenu();   //If number of users is =0, sets isfirsttime=1 to show it is the first user on the system, it then tkes the user to the WhileMenu() where a new member of staff can be added
+        WhileMenu();
         isfirsttime=1;
         }
 return 0;
@@ -404,10 +410,20 @@ int uquser=0;
 int passvalone=0;
 int userval=0;
 int passvaltwo=0;
+
+char staffin[30];
+int staffbuff=0;
+char telin[30];
+int telbuff=0;
+char emtelin[30];
+int emtelbuff=0;
+char ninumin[30];
+int nibuff=0;
 if(isfirsttime==1)
         {
         ReadBackStaffFile();
         cin.get();
+        //Outputs welcome message to the scren
         cout<<"\n Welcome to Stuart Watson's Painting and Decorating";
         cout<<"\n***************************************************";
         cout<<"\n You are the first user to access the system!";
@@ -415,22 +431,26 @@ if(isfirsttime==1)
         cout<<"\nPlease enter the following information as prompted below.";
         cout<<"\n";
         //User enters all data to be saved regarding a member of staff - all validated upon entry
-        while(ref==0)
+        while(staffbuff==0 || ref==0)   //While loop that controls the validation to ensure that the staff reference isnt in use
                 {
                 cout<<"\nEnter staff reference: ";
-                cin.getline(staffref[nsi],3);
-                ref = UniqueStaff(staffref[nsi]);
+                cin.getline(staffin,30);
+                staffbuff = Buffer(staffin,1);
+                if(staffbuff!=0 && ref==0)
+                        {
+                        ref = UniqueStaff(staffin);
+                        }//endif
                 }// end while
+        strcpy(staffref[nsi],staffin);
 
-
-        while(fname==0)
+        while(fname==0)  //While loop that controls the validation to ensure that a first name is entered
                 {
                 cout<<"\nEnter first name: ";
                 cin.getline(fnamestaff[nsi],15);
                 fname = PresVal(fnamestaff[nsi]);
                 }// end while
 
-        while(lname==0)
+        while(lname==0)   //While loop that controls the validation to ensure that a last name is entered
                 {
                 cout<<"\nEnter last name: ";
                 cin.getline(lnamestaff[nsi],15);
@@ -438,24 +458,24 @@ if(isfirsttime==1)
                 lname = PresValL(lnamestaff[nsi]);
                 }// end while
 
-        while(adone == 0)
+        while(adone == 0)   //While loop that controls the validation to ensure that address line 1 is entered
                 {
                 cout<<"\nEnter address line 1: ";
                 cin.getline(oneadstaff[nsi],30);
                 adone = PresValO(oneadstaff[nsi]);
                 }//end while
 
-cout<<"\nEnter address line 2: ";
+cout<<"\nEnter address line 2: "; //No validation as address line2 is not mandatory
 cin.getline(twoadstaff[nsi],30);
 
-        while(adthree == 0)
+        while(adthree == 0)  //While loop that controls the validation to ensure that address line 3 is entered
                 {
                 cout<<"\nEnter address line 3: ";
                 cin.getline(threeadstaff[nsi],30);
                 adthree = PresValTh(threeadstaff[nsi]);
                 }// end while
 
-        while(pcode==0)
+        while(pcode==0)  //While loop that controls the validation to ensure that the postcode entered is a valid UK postcode
                 {
                 cout<<"\nEnter postcode: ";
                 cin.getline(pcodestaff[nsi],9);
@@ -463,49 +483,58 @@ cin.getline(twoadstaff[nsi],30);
                 pcode = PostCodeVal(pcodestaff[nsi]);
                 }//endwhile
 
-        while(tel==0)
+        while(telbuff==0 || tel==0) //While loop that controls the validation to ensure that the mobile number entered is in the correct format: 07NNNNNNNNN
                 {
                 cout<<"\nEnter mobile number: ";
-                cin.getline(telnostaff[nsi], 12);
-                cout<<"\n";
-                tel = TelVal(telnostaff[nsi]);
+                cin.getline(telin,30);
+                telbuff = Buffer(telin,11);
+                if(telbuff!=0 && tel==0)
+                        {
+                        tel = TelVal(telin);
+                        }//endif
                 }//end while
-
-        while(emertel == 0)
+        strcpy(telnostaff[nsi],telin);
+        while(emtelbuff==0 || emertel == 0) //While loop that controls the validation to ensure that the mobile number entered is in the correct format: 07NNNNNNNNN
                 {
                 cout<<"\nEnter emergency mobile number: ";
-                cin.getline(emtel[nsi],12);
-                cout<<"\n";
-                emertel = TelValE(emtel[nsi]);
+                cin.getline(emtelin,30);
+                emtelbuff = Buffer(emtelin,11);
+                if(emtelbuff!=0 && emertel==0)
+                        {
+                        emertel = TelValE(emtelin);
+                        }//endif
                 }// end while
-
-        while(insg == 0)
+        strcpy(emtel[nsi],emtelin);
+        while(nibuff==0 || insg == 0) //while loop that controls validation to ensure the national insurance is of the correct format
                 {
                 cout<<"\nEnter national insurance number (FORMAT:AB 12 34 56 C): ";
-                cin.getline(ninum[nsi],15);
-                cout<<"\n";
-                insg = ValidNI(ninum[nsi]);
+                cin.getline(ninumin,30);
+                nibuff = Buffer(ninumin,13);
+                if(nibuff!=0 && insg==0)
+                        {
+                        insg = ValidNI(ninumin);
+                        }//endif
                 }// end while
-
-        while(uquser == 0)
+        strcpy(ninum[nsi],ninumin);
+        while(uquser == 0)  //while loop that controls validation to ensure the username entered is unqiue
                 {
                 cout<<"\nEnter username: ";
                 cin.getline(username[nsi],15);
                 uquser = UniqueUser(username[nsi]);
                 }// end while
-        while(passvalone==0)
+        while(passvalone==0)  //while loop that controls validation to ensure the password entered conforms to a set of rules
                 {
                 cout<<"\nEnter password (Minimum 8 characters with at least one piece of punctuation): ";
                 cin.getline(password[nsi],15);
                 passvalone = PasswordVal(password[nsi]);
                 }// end while
 
-      strcpy(loa[nsi],"3");
+      strcpy(loa[nsi],"3");  //Copies the level of access to the highest priority as the first person to use the system will have administrative purpose
         nsi = nsi +1;         //Increases the number of staff members stored in the file by one
         itoa(nsi,nsc,10);
         ReWriteStaffFile();   // Data is added to the staff file
         }//end if
-
+clrscr();
 //If there are 1 or more users stored in the staff file user enters their username and password
 if(isfirsttime==0)
         {
@@ -532,11 +561,12 @@ getch();
 return 0;
 }
 
-//While loop that outputs the main menu
+//This function determines whether or not the main menu should be outputted to the screen
 int Menu()
 {
 clrscr();
 int mainstatus=0;
+//While loop that outputs the main menu
 while(mainstatus != 7)
         {
         mainstatus = MainMenu();
@@ -558,13 +588,20 @@ ReadBackStaffFile();
 for (find = 0; find < nsi; find++)      //searches through all the staff in the staff file
 	{
 	compare = strcmpi(username[find], user);   //Compares each staff members username in the file with the one entered
-	if (compare == 0)
+	if (compare == 0)  //If compare=0 then the username entered is the same as one stored in the file
 		{
-		unique = 1;                    //Username has been found
+                //Username has been found
+		unique = 1;
                 FindLoa(username[find]);   //Routine that finds the logged in users level of access for use throughout the system
+                return unique;
 		} //endif found record
 	}//endfor
-
+if(compare!=0)
+        {
+        //Error message is outputted if no username matches
+        cout<<"\nUsername not found. Please try again.";
+        getch();
+        }//end else
 return unique;
 }
 
@@ -580,12 +617,18 @@ ReadBackStaffFile();
 for (find = 0; find < nsi; find++)      //searches through all the staff in the staff file
 	{
 	compare = strcmpi(password[find], pass);   //Compares each staff members password in the file with the one entered
-	if (compare == 0)
+	if (compare == 0) //If compare=0 then the password entered is the same as one stored in the file
 		{
 		unique = 1;    //Password has been found
+                return unique;
 		} //endif found record
 	}//endfor
-
+if(compare!=0)
+        {
+        //Error message is outputted if no username matches
+        cout<<"\nPassword not found. Please try again.";
+        getch();
+        }//end else
 return unique;
 }
 
@@ -600,17 +643,18 @@ int compare;
 for(find=0;find<nsi;find++)         //Searches through all the staff in the file
         {
         compare = strcmpi(user,username[find]);      //Compares each username in the file with the one entered
-        if(compare==0)
-                {                                 //If there is a match, copies level of acces into the global variable 'level' for hierachial use through the system
+        if(compare==0)  //If compare=0 then the username passed is the same as one stored in the file
+                {
+                //Copies level of acces into the global variable 'level' for hierachial use through the system while they are logged in
                 level = atoi(loa[find]);
                 }//end if
         }//end for
 getch();
 return 0;
-} */
+}
 
 
-// Menu to access different areas of the company
+//Outputs the main menu to the screen allowing the user to access different parts of the system 
 int MainMenu()
 {
 
@@ -799,6 +843,8 @@ int emtelbuff=0;
 char emtelb[30];
 char telb[30];
 char staffb[30];
+int nibuff=0;
+char bni[30];
 
 cout<<"\nAdd Staff";
 cout<<"\n*********";
@@ -812,7 +858,10 @@ while(bufferstaff==0 || ref==0)      //while loop that controls validation to en
         cout<<"\nEnter staff reference: ";
         cin.getline(staffb,30);
         bufferstaff=Buffer(staffb,1);
-        ref=UniqueStaff(staffb);
+        if(bufferstaff!=0 && ref==0)
+                {
+                ref=UniqueStaff(staffb);
+                }
         }//end while
 strcpy(staffref[nsi],staffb);
 
@@ -863,7 +912,10 @@ while(telbuff==0||tel==0)    //while loop that controls validation to ensure the
         cout<<"\nEnter mobile number: ";
         cin.getline(telb,30);
         telbuff=Buffer(telb,11);
-        tel = TelVal(telb);
+        if(telbuff!=0 && tel==0)
+                {
+                tel = TelVal(telb);
+                }
         }//end while
 
 strcpy(telnostaff[nsi],telb);
@@ -872,17 +924,25 @@ while(emtelbuff==0 || emertel == 0)     //while loop that controls validation to
         cout<<"\nEnter emergency mobile number: ";
         cin.getline(emtelb,30);
         emtelbuff=Buffer(emtelb,11);
-        emertel = TelValE(emtelb);
+        if(emtelbuff!=0 && emertel==0)
+                {
+                emertel = TelValE(emtelb);
+                }
         }// end while
 strcpy(emtel[nsi],emtelb);
 
-while(insg == 0)     //while loop that controls validation to ensure the national insurance is of the correct format
+while(nibuff==0 || insg == 0)     //while loop that controls validation to ensure the national insurance is of the correct format
         {
         cout<<"\nEnter national insurance number (FORMAT:AB 12 34 56 C): ";
-        cin.getline(ninum[nsi],15);
+        cin.getline(bni,30);
         cout<<"\n";
-        insg = ValidNI(ninum[nsi]);
+        nibuff = Buffer(bni,13);
+        if(nibuff!=0 && insg==0)
+                {
+                insg = ValidNI(bni);
+                }
         }// end while
+strcpy(ninum[nsi],bni);
 
 while(uquser == 0)     //while loop that controls validation to ensure the username is not already in use
         {
@@ -925,12 +985,6 @@ int position;
 
 len = strlen(staff); //Stores the length of the input
 
-if(len==0)      //Checks the length of the input and if it has been skipped
-        {
-        //Error message is outpuuted as no data has been entered
-        cout<<"\n Please enter a reference.";
-        uniqueref=0;  //If no
-        }//end if
 
 for(position=0;position<len;position++)     //loops through all characters in inout
         {
@@ -1037,7 +1091,7 @@ return length;
 //Validation routine to ensure the postcode entered by the user conforms with the standard british formats for a postcode
 int PostCodeVal(char postcode[9])
 {
-//lccal variables
+//local variables
 int valid =0;
 int length;
 
@@ -1056,101 +1110,103 @@ if(length==8)   //The postcode format: AA9A 9AA or AA99 9AA
                         }//enddigcheck
                         else
                                 {
-                                cout<<"\nPlease make sure all digits are in the same place.";
+                                cout<<"\nPlease make sure all letters are in the correct place.";
                                 }//end else - digit
                 }//endlettererrorcheck
                 else
                         {
-                        cout<<"\nPlease make sure all letters are in the same place.";
+                        cout<<"\nPlease make sure all digits are in the correct place.";
                         }//end else - letter
         }//endlengthcheck
         else
-        {
+                {
                 if(length==7)   //The postcode format: A9A 9AA or A99 9AA or AA9 9AA
                         {
+                        //A9A 9AA
                         if(isalpha(postcode[0])&& isalpha(postcode[2]) && isalpha(postcode[5]) && isalpha(postcode[6]))  //Checks certain positions are letters
                                 {
                                 if(isdigit(postcode[1]) && isdigit(postcode[4]))    //Checks certain positions are numbers
                                         {
                                         valid =1;
                                         }//enddigitcheck
-
-
-                                        else
-                                        {
-                                        if(isalpha(postcode[1]))     //Checks certain position is a letter
-                                                {
-                                                if(isalpha(postcode[0])&& isalpha(postcode[2]) && isalpha(postcode[5]) && isalpha(postcode[6]))
+                                        else  //A99 9AA
+                                            {
+                                            if(isdigit(postcode[2]))   //Checks certain position is a number
+                                                    {
+                                                    if(isalpha(postcode[0])&& isalpha(postcode[5]) && isalpha(postcode[6]))
+                                                            {
+                                                            if(isdigit(postcode[1]) && isdigit(postcode[4]))
+                                                                      {
+                                                                      valid =1;
+                                                                      }//end if
+                                                                    else
+                                                                            {
+                                                                            cout<<"\nPlease ensure digits are in the correct place.";
+                                                                            }
+                                                            }//end if - letter
+                                                            else
+                                                                    {
+                                                                    cout<<"\nPlease ensure letters are in the correct place.";
+                                                                    }//end else
+                                                    }//endif for position 2 is number
+                                                    else
                                                         {
-                                                        if(isdigit(postcode[4]))
+                                                        cout<<"\nPlease ensure letters are in the correct place.";
+                                                        }//end else
+                                            }//endletterelse
+                                }//endlettercheck
+                                  else   //AA9 9AA
+                                        {
+                                        if(isalpha(postcode[1]) || isdigit(postcode[2]))     //Checks certain position is a letter
+                                                {
+                                                if(isalpha(postcode[0])&& isalpha(postcode[5]) && isalpha(postcode[6]))
+                                                        {
+                                                        if(isdigit(postcode[2]) && isdigit(postcode[4]))
                                                                 {
                                                                 valid=1;
                                                                 }//end if - digit check
                                                                 else
                                                                         {
-                                                                        cout<<"\nPlease ensure digits are in the correct place.";
+                                                                        cout<<"\nPlease ensure letters are in the correct place.";
                                                                         }
                                                         }//end if - letter check
                                                         else
                                                                 {
-                                                                cout<<"\nPlease ensure letters are in the correct place.";
-                                                                }
-                                                }//end if for position 1 is letter
-                                        }//end else
-                                }//endlettercheck
-
-
-
-                                else
-                                {
-                                if(isdigit(postcode[2]))   //Checks certain position is a number
-                                        {
-                                        if(isalpha(postcode[0])&& isalpha(postcode[5]) && isalpha(postcode[6]))
-                                                {
-                                                if(isdigit(postcode[1]) && isdigit(postcode[4]))
-                                                          {
-                                                          valid =1;
-                                                          }//end if
-                                                }//end if - letter
-                                                else
-                                                        {
-                                                        cout<<"\nPlease ensure digits are in the correct place.";
-                                                        }//end else
-                                        }//endif for position 2 is number
-                                        else
-                                                {
-                                                cout<<"\nPlease ensure letters are in the correct place.";
-                                                }//end else
-                                }//endletterelse
-
-                        }//endlengthcheck
-
-
-                        else
-                        {
-                                if(length==6)    //Postcode format: A9 9AA
-                                        {
-                                        if(isalpha(postcode[0])&& isalpha(postcode[4]) && isalpha(postcode[5]))  //Checks certain positions are letters
-                                                {
-                                                if(isdigit(postcode[1]) && isdigit(postcode[3]))          //Checks certain positions are numbers
-				                        {
-				                        valid =1;
-				                        }
-                                                        else
-                                                                {
                                                                 cout<<"\nPlease ensure digits are in the correct place.";
                                                                 }
-                                               }//endlettercheck
-                                               else
+                                                }//end if for position 1 is letter
+                                                else
+                                                        {
+                                                        cout<<"\nPostcode invalid please try again.";
+                                                        }//end else
+                                        }//end else
+
+                        }//endlengthcheck
+                        else
+                        {
+                        if(length==6)    //Postcode format: A9 9AA
+                                {
+                                if(isalpha(postcode[0])&& isalpha(postcode[4]) && isalpha(postcode[5]))  //Checks certain positions are letters
+                                        {
+                                        if(isdigit(postcode[1]) && isdigit(postcode[3]))          //Checks certain positions are numbers
                                                 {
-                                                cout<<"\nPlease ensure letters are in the correct place.";
+                                                valid =1;
                                                 }
-                                        }//endlength check
-                                        else
-                                                {
-                                                cout<<"\n Please ensure the postcode is of a suitable length.";
-                                                }
-                                }
+                                                else
+                                                        {
+                                                        cout<<"\nPlease ensure letters are in the correct place.";
+                                                        }
+                                       }//endlettercheck
+                                       else
+                                        {
+                                        cout<<"\nPlease ensure digits are in the correct place.";
+                                        }
+                                }//endlength check
+                                else
+                                        {
+                                        cout<<"\n Please ensure the postcode is of a suitable length.";
+                                        }
+                                }//end if - length
         }//endelse for length is 7
 
 return valid;
@@ -1163,14 +1219,20 @@ int TelVal(char phonenum[12])
 //local variables
 int valid = 0;
 int position;
+int len=strlen(phonenum);
 
+if(len==0)
+        {
+        valid=0;
+        return valid;
+        }
 
 if(phonenum[0]=='0')     //Checks first digit is 0
         {
         if(phonenum[1]=='7')    //Checks second digit is 7
                 {
                 //Loops through the rest of the characters entered
-                for(position=2;position<10;position++)
+                for(position=2;position<len;position++)
                         {
                         //Checks rest of the characters are numbers
                         if(isdigit(phonenum[position]))
@@ -1181,7 +1243,8 @@ if(phonenum[0]=='0')     //Checks first digit is 0
                                         {
                                         //Error message if the number entered is not all digits
                                         cout<<"\nPlease ensure the mobile number is all digits.";
-                                        return 0;
+                                        valid=0;
+                                        return valid;
                                         }//end else
                         }//endfor - checking each character is an integer
                 }//endif - checking second digit is a 7
@@ -1206,7 +1269,13 @@ int TelValE(char phonenum[12])
 //local variables
 int valid = 0;
 int position;
+int len=strlen(phonenum);
 
+if(len==0)
+        {
+        valid=0;
+        return valid;
+        }
 
 //Checks first digit is 0
 if(phonenum[0]=='0')
@@ -1215,7 +1284,7 @@ if(phonenum[0]=='0')
         if(phonenum[1]=='7')
                 {
                 //Loops through the rest of the characters entered
-                for(position=2;position<10;position++)
+                for(position=2;position<len;position++)
                         {
                         //Checks rest of the characters are numbers
                         if(isdigit(phonenum[position]))
@@ -1226,7 +1295,8 @@ if(phonenum[0]=='0')
                                         {
                                         //Error message if the number entered is not all digits
                                         cout<<"\nPlease ensure the mobile number is all digits.";
-                                        return 0;
+                                        valid=0;
+                                        return valid;
                                         }//end else
                         }//endfor - checking each character is an integer
                 }//endif - checking second digit is a 7
@@ -1252,9 +1322,11 @@ int ValidNI(char ninum[10])
 int valid = 0;
 int len = strlen(ninum);  //strlen extracts the number of characetrs entered and stores it under the variable len
 
-//Checks the ni number is of the correct length for this format: AB 12 45 56 C
-if(len==13)
+if(len<13)
         {
+        valid=0;
+        return valid;
+        }
         //Checks certain positions are spaces
         if(isspace(ninum[2]) && isspace(ninum[5]) && isspace(ninum[8]))
                 {
@@ -1283,12 +1355,7 @@ if(len==13)
                 //Error message is outputted if NI is not in the correct format with spaces in the correct place
                 cout<<"\nMake sure there are the correct spaces in the national insurance number";
                 }// end else for space check error message
-        } // END LENGTH CHECK
-else
-        {
-        //Error message is outputted if the ni number is not of the correct length for this format: AB 12 45 56 C
-        cout<<"\nMake sure the national insurance number is exactly 13 characters long including spaces!";
-        }// end else for length error message
+
 return valid;
 }
 
@@ -1364,18 +1431,36 @@ int RangeCheck(char level[3])
 //local variables
 int valid = 0;
 int intlev;
-
+int len = strlen(level);
 intlev = atoi(level);       //converts level entered into an integer for range check
+int position;
 
-if(intlev <=3 && intlev>=1)       // checks that the level of access entered is between 1 and 3
+if(len==0)
         {
-        valid = 1;
-        } // end if
-else
+        cout<<"\nPlease ensure an access level was entered.";
+        valid=0;
+        return valid;
+        }//end if
+
+for(position=0;position<len;position++)
         {
-        //If level of access is not within this range error message is outputted
-        cout<<"\n Please choose a level of access between 1 and 3.";
-        }//end else
+        if(isdigit(level[position]))
+                {
+                if(intlev <=3 && intlev>=1)       // checks that the level of access entered is between 1 and 3
+                        {
+                        valid = 1;
+                        } // end if
+                else
+                        {
+                        //If level of access is not within this range error message is outputted
+                        cout<<"\n Please choose a level of access between 1 and 3.";
+                        }//end else
+                }//end if - digit check
+                else
+                        {
+                        cout<<"\n Please ensure you have entered a number 1-3.";
+                        }//end else
+        }//end for
 return valid;
 }
 //This function determines whether or not the staff menu should be outputted to the screen
@@ -1865,7 +1950,7 @@ cin.getline(looking,25);      //Staff reference to be searched
 for(find=0;find<nsi;find++)     //Searches through all the staff in the file
         {
         compare = strcmpi(looking,staffref[find]);    //Compares staff reference entered by the user with staff references in the file
-        if(compare == 0)  //If compare --0 there is match between the reference entered and the one stored in the file
+        if(compare == 0)  //If compare ==0 there is match between the reference entered and the one stored in the file
                 {
                 //THE staff information stored under this reference is then outputted to the screeen
                 cout<<"\nName: "<<fnamestaff[find]<<" "<<lnamestaff[find];
@@ -1896,20 +1981,20 @@ int Backup()
 {
 cout<<"\n\tBacking up files.\n"; //backup to usb memory drive
 
-system("copy StaffFileSD E:\\ProgramFileBackup\\");
+system("copy StaffFileSD D:\\ProgramFileBackup\\");
 
-system("copy CustomerFileSD E:\\ProgramFileBackup\\");
+system("copy CustomerFileSD D:\\ProgramFileBackup\\");
 
-system("copy QuotesFileSD E:\\ProgramFileBackup\\");
+system("copy QuotesFileSD D:\\ProgramFileBackup\\");
 
-system("copy InvoiceFileSD E:\\ProgramFileBackup\\");
+system("copy InvoiceFileSD D:\\ProgramFileBackup\\");
 
-system("copy StockFileSD E:\\ProgramFileBackup\\");
+system("copy StockFileSD D:\\ProgramFileBackup\\");
 
-system("copy ScheduleFileSD E:\\ProgramFileBackup\\");
+system("copy ScheduleFileSD D:\\ProgramFileBackup\\");
 
 cout<<"\n\tBack up attempt complete, if the backup has failed\n\tplease check the USB storage drive has the folder\n\t";
-
+getch();
 return 0;
 }
 
@@ -1920,12 +2005,13 @@ char confirm[2];
 
 int compare;
 
-cout<<"\n\tRecovery of data files.\n"; //recovery from USB
+cout<<"\n Recovery of data files.\n"; //recovery from USB
+cout<<"\n ***********************";
 
-cout<<"\n Enter Y to recover the file N to not recover that file";
+cout<<"\n Enter Y to recover the file N to not recover that file. \n";
 
-cout<<"\n All Files: Comfirm recovery";
-
+cin.get();
+cout<<"\n Staff File: Comfirm recovery: ";
 cin.getline(confirm,2);
 
 compare=strcmpi(confirm,"Y");
@@ -1933,23 +2019,68 @@ compare=strcmpi(confirm,"Y");
 if (compare==0)
 
         {
-        system("copy StaffFileSD \\ProgramFileBackup\\:E");
+        system("copy StaffFileSD C:\\ProgramFileBackup\\");
+        }//endif - recovery for staff file
 
-        system("copy CustomerFileSD \\ProgramFileBackup\\:E");
+cout<<"\n Customer File: Comfirm recovery: ";
+cin.getline(confirm,2);
 
-        system("copy QuotesFileSD \\ProgramFileBackup\\:E");
+compare=strcmpi(confirm,"Y");
 
-        system("copy InvoiceFileSD \\ProgramFileBackup\\:E");
+if (compare==0)
 
-        system("copy StockFileSD \\ProgramFileBackup\\:E");
+        {
+        system("copy CustomerFileSD C:\\ProgramFileBackup\\");
+        }//endif - recovery for customer file
 
-        system("copy ScheduleFileSD \\ProgramFileBackup\\:E");
+cout<<"\n Quote File: Comfirm recovery: ";
+cin.getline(confirm,2);
 
-        } // endif confirm for all files
+compare=strcmpi(confirm,"Y");
+
+if (compare==0)
+        {
+        system("copy QuotesFileSD C:\\ProgramFileBackup\\");
+        }//endif - recovery for quotes file
+
+cout<<"\n Invoice File: Comfirm recovery: ";
+cin.getline(confirm,2);
+
+compare=strcmpi(confirm,"Y");
+
+if (compare==0)
+
+        {
+        system("copy InvoiceFileSD C:\\ProgramFileBackup\\");
+        }//endif - recovery for invoice file
+
+cout<<"\n Stock File: Comfirm recovery: ";
+cin.getline(confirm,2);
+
+compare=strcmpi(confirm,"Y");
+
+if (compare==0)
+
+        {
+        system("copy StockFileSD C:\\ProgramFileBackup\\");
+        }//endif - recovery for stock file
+
+cout<<"\n Schedule File: Comfirm recovery: ";
+cin.getline(confirm,2);
+
+compare=strcmpi(confirm,"Y");
+
+if (compare==0)
+        {
+        system("copy ScheduleFileSD C:\\ProgramFileBackup\\");
+        }// endif - recovery for schedule file
+
+
+getch();
 return 0;
 }
 
-//system("copy E:\\ProgramFileBackup\\");
+
 
 //Reads all staff information from the file
 int ReadBackStaffFile()
@@ -2070,6 +2201,7 @@ switch(customerchoice)  //Allows different menu options to be ran depending on t
                 {
                 //If level of access is lower, then the following error message is outputted
                 cout<<"\nNot authorised.";   //If they don't - message will be outputted
+                getch();
                 }
              break;
              }
@@ -2103,7 +2235,7 @@ return customerchoice;
 int AddCustomer()
 {
 //Local variables
-int compare;
+
 int tpres=0;
 int fname=0;
 int lname=0;
@@ -2111,83 +2243,138 @@ int adone=0;
 int adthree=0;
 int post=0;
 int tel=0;
+int ref=0;
+char tempcust[3];
+
+char telb[30];
+int telbuff=0;
 
 cout<<"\nAdd Customer";
 cout<<"\n************";
-cout<<"\nEnter new customer reference: ";
-cin>>custref;            //customer reference to be added
+while(ref==0)
+        {
+        cin.get();
+        cout<<"\nEnter new customer reference: ";
+        cin.getline(tempcust,3);            //customer reference to be added
+        ref = CustRefVal(tempcust);
+        if(ref!=0)
+                {
+                ofstream fout(FileName2,ios::in);
+                fout.seekp(custref*sizeof(a_cust));
+                cin.get();
+                //All validation routines for information regarding a customer being entered
+                while(tpres==0)                  //while loop that controls validation to ensure a title is entered
+                        {
+                        cout<<"\nEnter title: ";
+                        cin.getline(a_cust.title,10);
+                        tpres = PresValTitle(a_cust.title);
+                        } //end while
+                while(fname==0)       //while loop that controls validation to ensure the first name is entered
+                        {
+                        cout<<"\nEnter first name: ";
+                        cin.getline(a_cust.fnamecust,15);
+                        fname = PresValFirst(a_cust.fnamecust);
+                        }  // end while
+                while(lname ==0)               //while loop that controls validation to ensure the last name is entered
+                        {
+                        cout<<"\nEnter last name: ";
+                        cin.getline(a_cust.lnamecust,15);
+                        lname = PresValLast(a_cust.lnamecust);
+                        }// end while
+                while(adone==0)          //while loop that controls validation to ensure address line 1 is entered
+                        {
+                        cout<<"\nEnter address line 1: ";
+                        cin.getline(a_cust.oneadcust,30);
+                        adone = PresValOne(a_cust.oneadcust);
+                        }// end while
 
+        cout<<"\nEnter address line 2: ";   //No validation on address line 2 as its not mandatory for an address
+        cin.getline(a_cust.twoadcust,30);
+
+                while(adthree==0)        //while loop that controls validation to ensure address line 3 is entered
+                        {
+                        cout<<"\nEnter address line 3: ";
+                        cin.getline(a_cust.threeadcust,15);
+                        adthree = PresValThree(a_cust.threeadcust);
+                        }// end while
+                while(post==0)  //while loop that controls validation to ensure the postcode endered is a valid UK postcode
+                        {
+                        cout<<"\nEnter postcode: ";
+                        cin.getline(a_cust.pcodecust,9);
+                        post = PostcodeValCust(a_cust.pcodecust);
+                        }// end while
+                while(telbuff==0 || tel==0)  //while loop that controls validation to ensure the mobile number is in the correct formst: 07NNNNNNNNN
+                        {
+                        cout<<"\nEnter mobile number: ";
+                        cin.getline(telb,30);
+                        telbuff = Buffer(telb,11);
+                        if(telbuff!=0 && tel==0)
+                                {
+                                tel = TelValCust(telb);
+                                }
+                        }// end while
+                strcpy(a_cust.telnocust,telb);
+                strcpy(a_cust.flag,"1");        //Once data is added, changes the value of the flag to 1 to show that data is now stored at this location
+                fout.write((char*)&a_cust,sizeof(a_cust));
+                fout.close();
+                return 0;
+                }//endif
+        }//endwhile
+
+
+getch();
+return 0;
+}
+
+//Validation routine to check a sensible reference has been entered
+int CustRefVal(char cust[3])
+{
+//local variables
+int length;
+int valid=0;
+int position;
+int compare;
+
+
+custref = atoi(cust);
 ifstream fin(FileName2,ios::binary);
 fin.seekg(custref*sizeof(a_cust));
 fin.get((char*)&a_cust,sizeof(a_cust));
 fin.close();
 compare = strcmpi(a_cust.flag, "0");       //Checks that there is no data already stored at this location in the file
-if(compare == 0)     //If compare==0 his means taht there is no data stored at that location so information can be added
+if(compare!=0)  //Means there is already data stored at this location
+                        {
+                        //Error message is outputted
+                        cout<<"\n Please enter a different customer reference.";
+                        valid=0;
+                        }//end if
+
+length = strlen(cust);
+
+if(length==0)
         {
-        ofstream fout(FileName2,ios::in);
-        fout.seekp(custref*sizeof(a_cust));
-        cin.get();
-        //All validation routines for information regarding a customer being entered
-        while(tpres==0)                  //while loop that controls validation to ensure a title is entered
-                {
-                cout<<"\nEnter title: ";
-                cin.getline(a_cust.title,10);
-                tpres = PresValTitle(a_cust.title);
-                } //end while
-        while(fname==0)       //while loop that controls validation to ensure the first name is entered
-                {
-                cout<<"\nEnter first name: ";
-                cin.getline(a_cust.fnamecust,15);
-                fname = PresValFirst(a_cust.fnamecust);
-                }  // end while
-        while(lname ==0)               //while loop that controls validation to ensure the last name is entered
-                {
-                cout<<"\nEnter last name: ";
-                cin.getline(a_cust.lnamecust,15);
-                lname = PresValLast(a_cust.lnamecust);
-                }// end while
-        while(adone==0)          //while loop that controls validation to ensure address line 1 is entered
-                {
-                cout<<"\nEnter address line 1: ";
-                cin.getline(a_cust.oneadcust,30);
-                adone = PresValOne(a_cust.oneadcust);
-                }// end while
-
-cout<<"\nEnter address line 2: ";   //No validation on address line 2 as its not mandatory for an address
-cin.getline(a_cust.twoadcust,30);
-
-        while(adthree==0)        //while loop that controls validation to ensure address line 3 is entered
-                {
-                cout<<"\nEnter address line 3: ";
-                cin.getline(a_cust.threeadcust,15);
-                adthree = PresValThree(a_cust.threeadcust);
-                }// end while
-        while(post==0)  //while loop that controls validation to ensure the postcode endered is a valid UK postcode
-                {
-                cout<<"\nEnter postcode: ";
-                cin.getline(a_cust.pcodecust,9);
-                post = PostcodeValCust(a_cust.pcodecust);
-                }// end while
-        while(tel==0)  //while loop that controls validation to ensure the mobile number is in the correct formst: 07NNNNNNNNN
-                {
-                cin.getline(a_cust.telnocust,12);
-                cout<<"\nEnter mobile number: ";
-                tel = TelValCust(a_cust.telnocust);
-                }// end while
-        strcpy(a_cust.flag,"1");        //Once data is added, changes the value of the flag to 1 to show that data is now stored at this location
-        fout.write((char*)&a_cust,sizeof(a_cust));
-        fout.close();
-        return 0;
+        cout<<"\nPlease ensure a reference has been entered.";
+        valid=0;
         }
 
-if(compare!=0)  //Means there is already stored at this location
+if(compare==0)
         {
-        //Error message is outputted
-        cout<<"\n Customer reference already in use. Please try again.";
+        for(position=0;position<length;position++)
+                {
+                if(isdigit(cust[position]))
+                        {
+                        valid=1;
+                        }//end if - digit check
+                else
+                        {
+                        cout<<"\n Please ensure you have entered a number for the reference.";
+                        valid=0;
+                        }//end else
+                }//end for
         }//end if
 
 getch();
-return 0;
+return valid;
 }
 
 //Validation routine to check data has been entered
@@ -2271,112 +2458,122 @@ return length;
 //Validation routine to ensure the postcode entered by the user conforms with the standard british formats for a postcode
 int PostcodeValCust(char postcode[9])
 {
+//local variables
 int valid =0;
+int length;
 
-int length=strlen(postcode);  //strlen extracts the number of characetrs entered and stores it under the variable length
+length=strlen(postcode);    //strlen extracts the number of characetrs entered and stores it under the variable lentgth
 
-
-if(length==8)     //The postcode format: AA9A 9AA or AA99 9AA
+if(length==8)   //The postcode format: AA9A 9AA or AA99 9AA
         {
-        if(isalpha(postcode[0]) && isalpha(postcode[1]) && isalpha(postcode[3]) && isalpha(postcode[6]) && isalpha(postcode[7])) //Checks certain positions of the postcode are letters
+        if(isalpha(postcode[0]) && isalpha(postcode[1]) && isalpha(postcode[6]) && isalpha(postcode[7]))  //Checks certain positions are letters
                 {
-                if(isdigit(postcode[2]) && isdigit(postcode[5]))       //Checks certain positions of the postcode are numbers
+                if(isdigit(postcode[2]) && isdigit(postcode[5]))  //Checks certain positions are numbers
                         {
-                        valid =1;
+                        if(isalpha(postcode[3])|| (isdigit(postcode[3])))
+                                {
+                                valid =1;          //Postcode format correct
+                                }
                         }//enddigcheck
-
-
                         else
-                        {
-                        cout<<"\nPlease make sure all digits are in the correct position.";
-                        }//enddigiterrorcheck
-                }//endlettercheck
-
-
-                else
-                {
-                if(isdigit(postcode[3]))     //Checks a certain position of the postcode is a number
-                        {
-                        valid =1;
-                        }//endelseforposition3
-
-
-                        else
-                        {
-                        cout<<"\nPlease make sure all letters are in the correct position.";
-                        }
+                                {
+                                cout<<"\nPlease make sure all letters are in the correct place.";
+                                }//end else - digit
                 }//endlettererrorcheck
+                else
+                        {
+                        cout<<"\nPlease make sure all digits are in the correct place.";
+                        }//end else - letter
         }//endlengthcheck
         else
-        {
+                {
                 if(length==7)   //The postcode format: A9A 9AA or A99 9AA or AA9 9AA
                         {
-                        if(isalpha(postcode[0])&& isalpha(postcode[2]) && isalpha(postcode[5]) && isalpha(postcode[6]))  //Checks certain positions of the postcode are letters
+                        //A9A 9AA
+                        if(isalpha(postcode[0])&& isalpha(postcode[2]) && isalpha(postcode[5]) && isalpha(postcode[6]))  //Checks certain positions are letters
                                 {
-                                if(isdigit(postcode[1]) && isdigit(postcode[4]))    //Checks certain positions of the postcode are numbers
+                                if(isdigit(postcode[1]) && isdigit(postcode[4]))    //Checks certain positions are numbers
                                         {
                                         valid =1;
                                         }//enddigitcheck
-
-
-                                        else
-                                        {
-                                        if(isalpha(postcode[1]))    //If position 1 is not a number checks it's a letter
-                                                {
-                                                valid =1;
-                                                }//end if for position 2 is number
-
-                                                else
+                                        else  //A99 9AA
+                                            {
+                                            if(isdigit(postcode[2]))   //Checks certain position is a number
+                                                    {
+                                                    if(isalpha(postcode[0])&& isalpha(postcode[5]) && isalpha(postcode[6]))
+                                                            {
+                                                            if(isdigit(postcode[1]) && isdigit(postcode[4]))
+                                                                      {
+                                                                      valid =1;
+                                                                      }//end if
+                                                                    else
+                                                                            {
+                                                                            cout<<"\nPlease ensure digits are in the correct place.";
+                                                                            }
+                                                            }//end if - letter
+                                                            else
+                                                                    {
+                                                                    cout<<"\nPlease ensure letters are in the correct place.";
+                                                                    }//end else
+                                                    }//endif for position 2 is number
+                                                    else
                                                         {
-                                                        cout<<"\n Please ensure all digits are in the correct position.";
-                                                        getch();
+                                                        cout<<"\nPlease ensure letters are in the correct place.";
                                                         }//end else
-                                        }//enddigit else
+                                            }//endletterelse
                                 }//endlettercheck
-
-
-
-                                else
-                                {
-                                if(isdigit(postcode[2]))                      //If position 2 is not a letter checks it's a number
+                                  else   //AA9 9AA
                                         {
-                                        valid =1;
-                                        }//endif for position 1 is letter
-
-                                        else
+                                        if(isalpha(postcode[1]) || isdigit(postcode[2]))     //Checks certain position is a letter
                                                 {
-                                                cout<<"\n Please ensure the letters are in the correct position.";
-                                                getch();
-                                                }// end else
-                                }//endletterelse
-                        }//endlengthcheck
-
-
-                        else
-                        {
-                                if(length==6)       //Postcode format: A9 9AA
-                                        {
-                                        if(isalpha(postcode[0])&& isalpha(postcode[4]) && isalpha(postcode[5]))    //Checks certain positions of the postcode are letters
-                                                {
-                                                if(isdigit(postcode[1]) && isdigit(postcode[3]))    //Checks certain positions of the postcode are numbers
-				                        {
-				                        valid =1;
-				                        }
+                                                if(isalpha(postcode[0])&& isalpha(postcode[5]) && isalpha(postcode[6]))
+                                                        {
+                                                        if(isdigit(postcode[2]) && isdigit(postcode[4]))
+                                                                {
+                                                                valid=1;
+                                                                }//end if - digit check
+                                                                else
+                                                                        {
+                                                                        cout<<"\nPlease ensure letters are in the correct place.";
+                                                                        }
+                                                        }//end if - letter check
                                                         else
                                                                 {
-                                                                cout<<"\nPlease ensure all digits are in the correct position.";
-                                                                }//end else
-                                               }//endlettercheck
-                                               else
+                                                                cout<<"\nPlease ensure digits are in the correct place.";
+                                                                }
+                                                }//end if for position 1 is letter
+                                                else
                                                         {
-                                                        cout<<"\nPlease ensure all letters are in the correct position.";
+                                                        cout<<"\nPostcode invalid please try again.";
                                                         }//end else
-                                        }//endlength check
+                                        }//end else
 
-
-                        }//endelse for length is 6
-
-
+                        }//endlengthcheck
+                        else
+                        {
+                        if(length==6)    //Postcode format: A9 9AA
+                                {
+                                if(isalpha(postcode[0])&& isalpha(postcode[4]) && isalpha(postcode[5]))  //Checks certain positions are letters
+                                        {
+                                        if(isdigit(postcode[1]) && isdigit(postcode[3]))          //Checks certain positions are numbers
+                                                {
+                                                valid =1;
+                                                }
+                                                else
+                                                        {
+                                                        cout<<"\nPlease ensure letters are in the correct place.";
+                                                        }
+                                       }//endlettercheck
+                                       else
+                                        {
+                                        cout<<"\nPlease ensure digits are in the correct place.";
+                                        }
+                                }//endlength check
+                                else
+                                        {
+                                        cout<<"\n Please ensure the postcode is of a suitable length.";
+                                        }
+                                }//end if - length
         }//endelse for length is 7
 
 return valid;
@@ -2387,45 +2584,47 @@ int TelValCust(char phonenum[12])
 {
 //local variables
 int valid = 0;
-int length = strlen(phonenum);
 int position;
+int len=strlen(phonenum);
 
-
-if(length == 11)      //Checks that the length of the phone number entered was 11
+if(len==0)
         {
-        if(phonenum[0]=='0')  //Checks the first position of the phone number is '0'
+        valid=0;
+        return valid;
+        }
+
+if(phonenum[0]=='0')     //Checks first digit is 0
+        {
+        if(phonenum[1]=='7')    //Checks second digit is 7
                 {
-                if(phonenum[1]=='7')  //Checks the second position of the phone number is '7'
+                //Loops through the rest of the characters entered
+                for(position=2;position<len;position++)
                         {
-                        //Loops through the rest of the characters entered
-		        for(position=2;position<10;position++)
+                        //Checks rest of the characters are numbers
+                        if(isdigit(phonenum[position]))
                                 {
-                                //Checks the rest of the phone number entered are all digits
-                                if(isdigit(phonenum[position]));
+                                valid = 1;
+                                }//endif for position 10
+                                else
                                         {
-                                        valid = 1;
-                                        }//endif for position 10
-                                }//endfor - checking each character is an integer
-                        }//endif - checking second digit is a 7
+                                        //Error message if the number entered is not all digits
+                                        cout<<"\nPlease ensure the mobile number is all digits.";
+                                        valid=0;
+                                        return valid;
+                                        }//end else
+                        }//endfor - checking each character is an integer
+                }//endif - checking second digit is a 7
                 else
                         {
                         //Error message is outputted to make sure mobile is in the correct format
-                        cout<<"\n Please ensure the second digit is 7 and mobile number begins 07.";
+                        cout<<"\nPlease make sure the phone number begins 07.";
                         }//end else
-
-                }//end if - checking first digit is 0
+        }//end if - checking first digit is 0
         else
                 {
                 //Error message is outputted to make sure mobile is in the correct format
-                cout<<"Please enter a phone number beginning with 0";
+                cout<<"\nPlease enter a phone number beginning with 07";
                 }//endelse
-
-        }//endif - checking its of length 11
-else
-        {
-        //Error message is outputted to make sure mobile is of the correct length
-        cout<<"Please make sure the phone number is exactly 11 digits long";
-        }
 
 return valid;
 }
@@ -2500,6 +2699,7 @@ char result[2];
 int adone=0;
 int adthree=0;
 int post=0;
+int len;
 
 cout<<"\nChange Customer Home Address";
 cout<<"\n****************************";
@@ -2507,7 +2707,14 @@ cout<<"\n****************************";
 cin.get();
 cout<<"\nEnter last name of the customer: ";
 cin.getline(name,15);   //Customer to be searched for
-
+len=strlen(name); //Extracts the number of characters and stores it under the variable 'len'
+if(len==0)   //Checks to see if data has been entered
+        {
+        //If no data has been entered then the following error message is outputted
+        cout<<"\nPlease ensure a last name has been entered.";
+        getch();
+        return 0;
+        }
 
 for(custref=0;custref<10;custref++)  //loops through all the customerss in the file
 	{
@@ -2520,7 +2727,11 @@ for(custref=0;custref<10;custref++)  //loops through all the customerss in the f
                 {
                 //Details about the customer are outputted to check its the correct customer
                 cout<<"\nFull name: "<<a_cust.fnamecust<<" "<<a_cust.lnamecust;
-                cout<<"\nMobile number: "<<a_cust.telnocust;
+                cout<<"\n";
+                cout<<"\nCurrent address: "<<a_cust.oneadcust;;
+                cout<<"\n\t\t "<<a_cust.twoadcust;
+                cout<<"\n\t\t "<<a_cust.threeadcust;
+                cout<<"\n\t\t "<<a_cust.pcodecust;
                 cin.get();
                 cout<<"\nIs this the correct customer to be amended (Y/N): ";
                 cin>>result; //User confirms whether or not is it the correct customer
@@ -2562,10 +2773,13 @@ for(custref=0;custref<10;custref++)  //loops through all the customerss in the f
                         return 0;
                 }//end if
         }//endfor
+
 if(compare!=0)
         {
         //If no match is found between the last name entered by the user and those in the file the following error essage is outputted to the screen
-        cout<<"\n Customer's last name has not been found.";
+        cout<<"\nCustomer's last name has not been found.";
+        getch();
+        return 0;
         }//end if
 getch();
 return 0;
@@ -2580,6 +2794,7 @@ int compare;
 int compresult;
 char result[2];
 int tel=0;
+int len;
 
 cout<<"\nChange Customer Mobile Number";
 cout<<"\n*****************************";
@@ -2587,7 +2802,14 @@ cout<<"\n*****************************";
 cin.get();
 cout<<"\nEnter last name of the customer: ";
 cin.getline(name,15);    //Customer to be found
-
+len=strlen(name); //Extracts number of characters entered and stores it under the variable 'len'
+if(len==0) //Checks if data has been entered
+        {
+        //If no data has been entered then the following error message is outputted
+        cout<<"\nPlease ensure a last name has been entered.";
+        getch();
+        return 0;
+        }
 
 for(custref=0;custref<10;custref++)    //Searches through all the customers in the file
 	{
@@ -2629,7 +2851,9 @@ for(custref=0;custref<10;custref++)    //Searches through all the customers in t
 if(compare!=0)
         {
         //If no match is found between the last name entered by the user and those in the file the following error essage is outputted to the screen
-        cout<<"\n Customer's last name has not been found.";
+        cout<<"\nCustomer's last name has not been found.";
+        getch();
+        return 0;
         }//end if
 getch();
 return 0;
@@ -2642,12 +2866,29 @@ int DeleteCustomer()
 int compare;
 int compresult;
 char result[2];
+int len;
+char charref[3];
 
 cout<<"\nDelete a customer";
 cout<<"\n*****************";
 
 cout<<"\nEnter customer reference: ";
-cin>>custref;       //Customer reference to be found
+cin.get();
+cin.getline(charref,3);       //Customer reference to be found
+
+len=strlen(charref);  //Used to extract the number of characters and stores this valid under len
+
+if(len==0) //Checks to see if data has been entered
+        {
+        //If no data has been entered then the following error message is outputted
+        cout<<"\nPlease ensure a customer reference has been entered.";
+        getch();
+        return 0;
+        }//end if
+else
+        {
+        custref=atoi(charref);
+        }//end else
 
 ScheduleCheck(custref);     //Check to see if the customer has a booking on the schedule
 
@@ -2678,7 +2919,9 @@ if(compare==0)   //Compare==0 if there is data stored at that location in the fi
 if(compare!=0)
         {
         //If customer reference's location is empty - outputs the following error message
-        cout<<"\n Customer reference not found.";
+        cout<<"\nCustomer reference not found.";
+        getch();
+        return 0;
         }//end if
 getch();
 return 0;
@@ -2777,6 +3020,7 @@ int CName()
 int compare;
 int cmp;
 char name[25];
+int len;
 
 cout<<"\nView Customer by Customer Name";
 cout<<"\n******************************";
@@ -2785,7 +3029,14 @@ cout<<"\nEnter customers last name: ";
 cin.get();
 cin.getline(name,25);  //Customer to be found
 
-
+len=strlen(name); //Extracts number of characters entered and stores it under the variable 'len'
+if(len==0) //Checks if data has been entered
+        {
+        //If no data has been entered then the following error message is outputted
+        cout<<"\nPlease ensure a last name has been entered.";
+        getch();
+        return 0;
+        }
 for(custref=0;custref<10;custref++)  //Searches through all customers in the file
         {
         ifstream fin(FileName2,ios::binary);
@@ -2807,13 +3058,16 @@ for(custref=0;custref<10;custref++)  //Searches through all customers in the fil
                                 cout<<"\n";
                                 cout<<"\Mobile number: "<<a_cust.telnocust;
                                 getch();
+                                return 0;
                                 }// end if
                 }//end if
         }//end for
 if(compare!=0)
         {
         //If no match is found between the last name entered by the user and those in the file the following error essage is outputted to the screen
-        cout<<"\n Customer's last name has not been found.";
+        cout<<"\nCustomer's last name has not been found.";
+        getch();
+        return 0;
         }//end if
 getch();
 return 0;
@@ -2823,14 +3077,29 @@ return 0;
 int CRef()
 {
 int compare;
+char charref[3];
+int len;
 
 
 cout<<"\nView Customer by Customer Reference";
 cout<<"\n******************************";
 
 cout<<"\nEnter customer reference: ";
-cin>>custref;        //Customer reference to be searched
+cin.get();
+cin.getline(charref,3);        //Customer reference to be searched
+len=strlen(charref);  //Used to extract the number of characters and stores this valid under len
 
+if(len==0) //Checks to see if data has been entered
+        {
+        //If no data has been entered then the following error message is outputted
+        cout<<"\nPlease ensure a customer reference has been entered.";
+        getch();
+        return 0;
+        }//end if
+else
+        {
+        custref=atoi(charref);
+        }//end else
 ifstream fin(FileName2,ios::binary);
 fin.seekg(custref*sizeof(a_cust));      //Calculation to find customer records in the file
 fin.get((char*)&a_cust,sizeof(a_cust));
@@ -2846,14 +3115,17 @@ if(compare != 0)       //If compare!=0 this means that data is stored at the loc
         cout<<"\nAddress line 3: "<<a_cust.threeadcust;
         cout<<"\nPostcode: "<<a_cust.pcodecust;
         cout<<"\n";
-        cout<<"\\Mobile number: "<<a_cust.telnocust;
+        cout<<"\nMobile number: "<<a_cust.telnocust;
         getch();
+        return 0;
         }// end if
 
 if(compare==0)
         {
         //If flag location is 0 , meaning its empty and no information is stored there - the following error message is outputted
-        cout<<"\n Customer reference not found.";
+        cout<<"\nCustomer reference not found.";
+        getch();
+        return 0;
         }//end if
 getch();
 return 0;
@@ -2898,7 +3170,16 @@ switch(quotechoice)   //Allows different functions to be ran deoening on the men
              }
         case 2:  //If quotechoice=1 then the ChangeQuote function is ran
              {
-             ChangeQuote();
+             if(level>=2)
+                {
+                ChangeQuote();
+                }
+             else
+                {
+                //Error message is outputtef if the user logged in does not have a high enough access level
+                cout<<"\nNot authorised.";
+                getch();
+                }
              break;
              }
 
@@ -2912,6 +3193,7 @@ switch(quotechoice)   //Allows different functions to be ran deoening on the men
                 {
                 //Error message is outputtef if the user logged in does not have a high enough access level
                 cout<<"\nNot authorised.";
+                getch();
                 }
              break;
              }
@@ -2962,7 +3244,10 @@ int dateq=0;
 int presm=0;
 int dayrange=0;
 int prestravel=0;
-char sref[2];
+
+
+int datebuff=0;
+char datein[30];
 
 cout<<"\nAdd Quote";
 cout<<"\n*********";
@@ -2983,12 +3268,17 @@ while(cust==0)  //While loop that controls validation to ensure that the custome
         cust = LocateCustQVal(custno[nqi]);
         }//end while
 
-while(dateq == 0)   //While loop that controls validation to ensure that the date entered is in the correct format: DD/MM/YYYY
+while(dateq == 0 || datebuff==0)   //While loop that controls validation to ensure that the date entered is in the correct format: DD/MM/YYYY
         {
         cout<<"\nEnter date quote is produced: ";
-        cin.getline(quotedate[nqi],11);
-        dateq = DateVal(quotedate[nqi]);
+        cin.getline(datein,30);
+        datebuff = Buffer(datein,10);
+        if(datebuff!=0 && dateq==0)
+                {
+                dateq = DateVal(datein);
+                }//end if
         } // end while
+strcpy(quotedate[nqi],datein);
 
 while(presm == 0)    //While loop that controls validation to ensure that data has been entered
         {
@@ -3012,7 +3302,7 @@ while(prestravel == 0)  //While loop that controls validation to ensure that the
         }
 
 stocktotal = AddStockQuote(quoteref[nqi]);
-cout<<"\nStock totsl: "<<stocktotal;
+cout<<stocktotal;
 
 // converts values entered by the user to integers to be used in the calculation
 numofdaysq = atoi(numofdays[nqi]);
@@ -3025,7 +3315,10 @@ total = stocktotal + (numofdaysq*150) + mileageq + VAT;
 
 //Convers the results from the calculation so it can be stored in the quotes file
 itoa(labour,labourq[nqi],10);
+itoa(stocktotal,stockcost[nqi],10);
+cout<<"\nchar"<<stockcost[nqi];
 itoa(total,totalcost[nqi],10);
+cout<<"\nchar"<<totalcost[nqi];
 itoa(VAT, vat[nqi],10);
 
 cout<<"\nPrice Breakdown";         //Outputs all the price calculations to the screen once all the information has been entered
@@ -3063,11 +3356,9 @@ for(count=0;count<numofitems;count++)     //for the number of items required fin
         //User inputs the stock reference which is then passed a parameter to find in the stock file and retrieve the price
         while(stock==0)
                 {
-                cout<<"\n count value: "<<count;
-                cout<<"\nEnter stock reference: ";
+                cout<<"\nPlease enter the stock reference: ";
                 cin>>sref;
                 cin.get();
-                cout<<"\n stock reference entered: "<<sref;
                 cin.getline(linksstockref[nli],3);
                 stock = StockVal(sref);
                 if(stock!=0)
@@ -3089,39 +3380,58 @@ getch();
 return stocktotal;
 }
 
+//Routine which validates the stock reference for add quote
 int StockVal(char ref[2])
 {
+//local variables
 int find;
 int len;
 int compare;
 int valid=0;
+int position;
 
-len=strlen(ref);
-cout<<"\nStock ref in validation: "<<ref;
-cout<<"\n length of reference: "<<len;
-if(len==0)
+len=strlen(ref);   //Extracts number of characters entered
+
+if(len==0)  //If len==0 no data has been entered
         {
-        cout<<"\n Please ensure you have entered a stock reference.";
+        //Error message is outputted if no data has been entered
+        cout<<"\nPlease ensure you have entered a stock reference.";
         getch();
         valid=0;
         }
-ReadBackStockFile();
-for(find=0;find<nsti;find++)
+
+for(position=0;position<len;position++)  //Loops through all characters
         {
-        compare=strcmpi(ref, stockref[find]);
-        cout<<"\n File: "<<stockref[find];
-        if(compare==0)
+        //Checks its a number
+        if(isdigit(ref[position]))
                 {
-                cout<<"\n stock found";
-                valid=1;
-                return valid;
-                }
-        else
-                {
-                cout<<"\n Stock reference not found.";
-                getch();
-                valid=0;
-                }
+                ReadBackStockFile();
+                //Loops through all stock in the file
+                for(find=0;find<nsti;find++)
+                        {
+                        //Compares reference entered with those stored in the file
+                        compare=strcmpi(ref, stockref[find]);
+                        //If there is a match, reference is accepted
+                        if(compare==0)
+                                {
+                                valid=1;
+                                return valid;
+                                }//end if
+                        }//end for
+                }//end if
+                else
+                        {
+                        //Error message if a number is not entered
+                        cout<<"\nPlease ensure a number is entered.";
+                        getch();
+                        valid=0;
+                        return valid;
+                        }//end else
+                }//endfor
+if(compare!=0)
+        {
+        //Error message is outputted if no match is found
+        cout<<"\nStock reference not found. Please try again.";
         }
 return valid;
 }
@@ -3129,8 +3439,7 @@ return valid;
 //Uses the stock reference entered by the user to find the price of stock and creates a running total of all the stock required to pass back to the main calculation
 int FindStock(char lstock[3], int counting)
 {
-cout<<"\n stock ref: "<<lstock;
-cout<<"\nIN STOCK PRICE";
+
 ReadBackStockFile();
 //local variables
 int find;
@@ -3149,17 +3458,13 @@ for(find=0;find<nsti;find++)               //Searches through all stock stored i
                         cout<<"\nWhat quantity is required: ";
                         cin>>quant;
                         counting=counting+1;
-                        int fileq = atoi(quantity[find]);
-                        cout<<"\n fileq before: "<<fileq;
-                        fileq= fileq - quant;
-                        cout<<"\nfileq after: "<<fileq;
+                        int fileq = atoi(quantity[find]);   //Converts quantity of item of stock stored in the file to an integer
+                        fileq= fileq - quant;       //Takes off the quantity required for this quote
                         itoa(fileq,quantity[find],10);
-                        ReWriteStockFile();
+                        ReWriteStockFile();            //Saves new quantity to the stock file
                         itoa(quant,linksquantity[nli],10);
                         cost = cost + (sp*quant);          //Calculates the price of 1 item of stock and multiplies it by the quantity required
-                        cout<<"\n counting value: "<<counting;
-                        cout<<"\n numbrt of iyrmd: "<<numofitems;
-                        if(counting<numofitems)
+                        if(counting<numofitems)    //If stock reference still left to be validated
                                 {
                                 stock=0;
                                 }
@@ -3180,19 +3485,34 @@ int find;
 int compare;
 int len;
 len=strlen(quote);
+int position;
 
 ReadBackQuotesFile();
+
 if(len!=0)     //Checks something has been entered
         {
-        for (find = 0; find < nqi; find++)      //Searches through all the quotes in the file
+        for(position=0;position<len;position++)     //loops through all characters in inout
                 {
-                compare = strcmpi(quoteref[find], quote);    //Compares quote references in the file with the one entered
-                if (compare == 0)
-                        {                                   //If a match is found, quote reference is already in use
-                        uniqueref = 0;
-                        cout<<"\n Quote reference already in use. Please try again.";
-                        } //endif found record
-                }//endfor
+                if(isdigit(quote[position]))      //Checks to see if it an integer, if it is the rest of the loop runs
+                {
+                for (find = 0; find < nqi; find++)      //Searches through all the quotes in the file
+                        {
+                        compare = strcmpi(quoteref[find], quote);    //Compares quote references in the file with the one entered
+                        if (compare == 0)
+                                {                                   //If a match is found, quote reference is already in use
+                                uniqueref = 0;
+                                cout<<"\nQuote reference already in use. Please try again.";
+                                } //endif found record
+                        }//endfor
+                }//endif
+                else
+                        {
+                        cout<<"\nPlease ensure a number was entered for the reference.";
+                        uniqueref=0;
+                        getch();
+                        return uniqueref;
+                        } //end else
+                }//end for
         }//end if
         else
                 {
@@ -3225,7 +3545,7 @@ if(compare==0)                      //If there is, customer reference exists
 if(compare!=0)
         {
         //If flag is empty, reference not found and therefore error message is outputted
-        cout<<"\n Customer reference not found.";
+        cout<<"\nCustomer reference not found.";
         }//end if
 return valid;
 }
@@ -3238,76 +3558,68 @@ int valid =0;
 int months;
 int days;
 float years;
-int len = strlen(date);
 
-if(len == 10)           //Checks the length of the date is correct
+
+if(date[2] == '/' && date[5] == '/')    //Ensure the forward slashes are in the correct place
         {
-        if(date[2] == '/' && date[5] == '/')    //Ensure the forward slashes are in the correct place
+        sscanf(&date[3],"%d",&months);      //Extracts the days amd month from the date entered and converts them to integers
+        sscanf(&date[0],"%d",&days);
+        if(months==4 || months==6 || months==9 || months==11)
+                {                                               //Checks the days entered are between the 1st and 30th for these months
+                if(days>= 1 && days<= 30)
+                        {
+                        valid = 1;
+                        }//endif-fordays30
+                else                                     //If not - error message is outputted
+                        {
+                        cout<<"\nMake sure the date is between the 1st and 30th";
+                        }//endelse
+                }//endif-formonths30
+
+        if(months==1 || months==3 || months==5 || months==7 || months==8 || months==10 || months==12)    //Checks the days entered are between the 1st and 31st for these months
                 {
-                sscanf(&date[3],"%d",&months);      //Extracts the days amd month from the date entered and converts them to integers
-                sscanf(&date[0],"%d",&days);
-                if(months==4 || months==6 || months==9 || months==11)
-                        {                                               //Checks the days entered are between the 1st and 30th for these months
-                        if(days>= 1 && days<= 30)
+                if(days>= 1 && days<= 31)
+                        {
+                        valid = 1;             //If not - error message is outputted
+                        }//endif-fordays31
+                else
+                        {
+                        cout<<"\nMake sure the date is between the 1st and the 31st";
+                        }//endelse
+                }//endif-formonths31
+
+        if(months==2)
+                {
+                sscanf(&date[7],"%f",&years);    //If month is Feb converts years to float to allow for division to find if it is a leap year
+                if(floor(years/4)== (years/4))     //If division is the same - shows its a leap year
+                        {
+                        if(days>= 1 && days <=29)   //Allows up the 29th
                                 {
                                 valid = 1;
-                                }//endif-fordays30
-                        else                                     //If not - error message is outputted
-                                {
-                                cout<<"Make sure the date is between the 1st and 30th";
-                                }//endelse
-                        }//endif-formonths30
-
-                if(months==1 || months==3 || months==5 || months==7 || months==8 || months==10 || months==12)    //Checks the days entered are between the 1st and 31st for these months
-                        {
-                        if(days>= 1 && days<= 31)
-                                {
-                                valid = 1;             //If not - error message is outputted
-                                }//endif-fordays31
+                                }//endif-fordaysfeb29
                         else
                                 {
-                                cout<<"Make sure the date is between the 1st and the 31st";
-                                }//endelse
-                        }//endif-formonths31
+                                cout<<"\nMake sure the date is between the 1st and the 29th";
+                                }
+                        }
 
-                if(months==2)
-                        {
-                        sscanf(&date[7],"%f",&years);    //If month is Feb converts years to float to allow for division to find if it is a leap year
-                        if(floor(years/4)== (years/4))     //If division is the same - shows its a leap year
+                if(floor(years/4)!= (years/4))       //If division is not equal - allows only until the 28th
                                 {
-                                if(days>= 1 && days <=29)   //Allows up the 29th
+                                if(days>= 1 && days <=28)
                                         {
                                         valid = 1;
-                                        }//endif-fordaysfeb29
+                                        }//endif-fordaysfeb28
                                 else
                                         {
-                                        cout<<"Make sure the date is between the 1st and the 29th";
+                                        cout<<"\nMake sure the date is between the 1st and the 28th";
                                         }
-                                }
+                                }//endif
+                }//end if - months
 
-                        if(floor(years/4)!= (years/4))       //If division is not equal - allows only until the 28th
-                                        {
-                                        if(days>= 1 && days <=28)
-                                                {
-                                                valid = 1;
-                                                }//endif-fordaysfeb28
-                                        else
-                                                {
-                                                cout<<"Make sure the date is between the 1st and the 28th";
-                                                }
-                                        }//endif
-                        }//end if - months
-
-                }//endif-forslashes
-        else
-                {
-                cout<<"Forward slashes are in the wrong place";
-                }//endelse
-
-        }//endif-forlength
+        }//endif-forslashes
 else
         {
-        cout<<"Please make sure your date is of length 10";
+        cout<<"Forward slashes are in the wrong place";
         }//endelse
 
 return valid;
@@ -3321,28 +3633,60 @@ length=strlen(presence);    //strlen extracts the number of characetrs entered a
 if(length==0)   //Checks to see if the length is 0 as if it is no data has been entered
         {
         //Error message is outputted if length = 0
-        cout<<"Please enter a job description";
+        cout<<"\nPlease enter a job description";
         }//endif
 return length;
 }
 
 //Validation routine that checks that the number of days entered is reasonable
-int RangeDay(char day[3])
+int RangeDay(char day[4])
 {
 //local variables
 int valid = 0;
 int intday;
+int position;
+int len;
+len=strlen(day); //extracts the number of characters stored
 
 intday = atoi(day);   //converts number of days to an integer
 
-if(intday>=1 && intday <=21)       //Ensure that the number of days on the job is less that 3 weeks
+if(len!=0)
         {
-        valid = 1;
-        } // end if
-else
-        {
-        cout<<"\n Please ensure the number of days entered is within the range 1-21 days.";
-        }// end else
+        for(position=0;position<len;position++) //Loops through all the characters
+                {
+                if(isdigit(day[position]))  //Checks the input is a number
+                        {
+                        if(intday>=1 && intday <=21)       //Ensure that the number of days on the job is less that 3 weeks
+                                {
+                                valid = 1;
+                                } // end if
+                        else
+                                {
+                                //Error message if not in range
+                                cout<<"\nPlease ensure the number of days entered is within the range 1-21 days.";
+                                getch();
+                                valid=0;
+                                return valid;
+                                }// end else
+                        }//end if
+                        else
+                                {
+                                //Error message outputted if not a number
+                                cout<<"\nPlease enter a number.";
+                                getch();
+                                valid=0;
+                                return valid;
+                                }//end else
+                }//endfor
+        }//end if
+        else
+                {
+                //Error message outputted if no data is entered
+                cout<<"\nPlease ensure the number of days was entered.";
+                getch();
+                valid=0;
+                return valid;
+                }//end else
 return valid;
 }
 
@@ -3350,7 +3694,20 @@ return valid;
 int PresValTr(char presence[30])
 {
 int length;
+int position;
 length=strlen(presence); //strlen extracts the number of characetrs entered and stores it under the variable length
+
+for(position=0;position<length;position++) //Loops through all the characters
+                {
+                if(isalpha(presence[position]))  //Checks the input is a number
+                        {
+                        cout<<"\nPlease ensure a number has been entered.";
+                        getch();
+                        length=0;
+                        return length;
+                        }//end if
+                }//endfor
+
 if(length==0)     //Checks to see if the length is 0 as if it is no data has been entered
         {
         //Error message is outputted if length = 0
@@ -3457,7 +3814,7 @@ for(find =0; find<nqi; find++)                 //Searches through all the quotes
                         while(priceval==0)   //while loop that controls the validation to ensure the price entered is within a suitable range
                                 {
                                 cout<<"\nEnter new price: ";
-                                cin.getline(totalcost[find],5);
+                                cin.getline(totalcost[find],6);
                                 priceval = QuotePriceRange(totalcost[find]);
                                 }
                         ReWriteQuotesFile();              //New price is written to the file
@@ -3469,7 +3826,7 @@ for(find =0; find<nqi; find++)                 //Searches through all the quotes
 if(compare!=0)
         {
         //If there is not a match between the reference entered and those stored in the file then the following error message is outputted
-        cout<<"\n Quote reference not found.";
+        cout<<"\nQuote reference not found.";
         }//end if
 getch();
 return 0;
@@ -3488,9 +3845,12 @@ if(len==0)  //Checks to see if the length is 0 as if it is no data has been ente
         {
         //Error message is outputted if len=0
         cout<<"\nPlease ensure you have entered a new price.";
+        getch();
         valid=0;
+        return valid;
         }
 price = atoi(cost); //converts price to an integer for range check
+
 
 if(price>=50 && price<=10000)  //range check
         {
@@ -3499,7 +3859,7 @@ if(price>=50 && price<=10000)  //range check
 else
         {
         //Error message if the price is outside of the range
-        cout<<"\n Please enusure the price entered is wihtin the range of 50-10000";
+        cout<<"\nPlease enusure the price entered is wihtin the range of 50-10000";
         }//end else
 return valid;
 }
@@ -3520,74 +3880,86 @@ int difference;
 int totali;
 int newtotal;
 int dayrange=0;
+int len;
 
 cout<<"\nChange days worked on quote";
 cout<<"\n***************************";
 ReadBackQuotesFile();
 cin.get();
 
+
 cout<<"\nEnter the quote reference of the quote you want to change: ";
 cin.getline(looking,25);              //Quote to be found
 
-for(find =0; find<nqi; find++)       //Searches through all the quotes
+len=strlen(looking);
+if(len!=0)
         {
-        compare = strcmpi(looking,quoteref[find]);     //Compares each quote reference in the file with the one entered
-        if(compare ==0)  //If compare==0 then there is a match between the quote reference entered and one stored in the file
+        for(find=0; find<nqi; find++)       //Searches through all the quotes
                 {
-                //Details of the quote are outputted to check its the correct one
-                cout<<"\nCustomer Reference: "<<custno[find];
-                LocateCust(custno[find]);   //Function to output customer information
-                cout<<"\nJob Description: "<<mainjobdesc[find];
-                cin.get();
-                cout<<"\nIs this the correct quote to be amended (Y/N): ";
-                cin>>result; //User confirms whether or not it is the correct quote
-                compresult=strcmpi(result,"Y");  //Compares the input with Y
-                if(compresult == 0)  //If the input is Y then the new number of days can be added, if it is N returns to the Change Quote Menu
+                compare = strcmpi(looking,quoteref[find]);     //Compares each quote reference in the file with the one entered
+                if(compare ==0)  //If compare==0 then there is a match between the quote reference entered and one stored in the file
                         {
+                        //Details of the quote are outputted to check its the correct one
+                        cout<<"\nCustomer Reference: "<<custno[find];
+                        LocateCust(custno[find]);   //Function to output customer information
+                        cout<<"\nJob Description: "<<mainjobdesc[find];
                         cin.get();
-                        //Validates upon entry
-                        while(dayrange==0)   //While loop that controls the validation to ensure the number of days entered is within a suitable range
+                        cout<<"\nIs this the correct quote to be amended (Y/N): ";
+                        cin>>result; //User confirms whether or not it is the correct quote
+                        compresult=strcmpi(result,"Y");  //Compares the input with Y
+                        if(compresult == 0)  //If the input is Y then the new number of days can be added, if it is N returns to the Change Quote Menu
                                 {
-                                cout<<"\nEnter new number of days: ";
-                                cin.getline(numofdays[find],3);
-                                dayrange = RangeDay(numofdays[find]);
-                                }//end while
+                                cin.get();
+                                //Validates upon entry
+                                while(dayrange==0)   //While loop that controls the validation to ensure the number of days entered is within a suitable range
+                                        {
+                                        cout<<"\nEnter new number of days: ";
+                                        cin.getline(numofdays[find],3);
+                                        dayrange = RangeDay(numofdays[find]);
+                                        }//end while
 
-                        ReWriteQuotesFile();  //saves data to the quotes file
+                                ReWriteQuotesFile();  //saves data to the quotes file
 
-                        //converts to integers to be used in calculations
-                        numofdaysq = atoi(numofdays[find]);
-                        oldlabour = atoi(labourq[find]);
+                                //converts to integers to be used in calculations
+                                numofdaysq = atoi(numofdays[find]);
+                                oldlabour = atoi(labourq[find]);
 
-                        //calculates new labour price
-                        newlabour = numofdaysq*150;
+                                //calculates new labour price
+                                newlabour = numofdaysq*150;
 
-                        //stores new labour price to quotes file
-                        itoa(newlabour,labourq[find],10);
-                        ReWriteQuotesFile();
+                                //stores new labour price to quotes file
+                                itoa(newlabour,labourq[find],10);
+                                ReWriteQuotesFile();
 
-                        //works out the extra cost for days so it can be added to the total
-                        difference = newlabour - oldlabour;
+                                //works out the extra cost for days so it can be added to the total
+                                difference = newlabour - oldlabour;
 
-                        //converts original total from quotes file to an integer to be used in calculations
-                        totali = atoi(totalcost[find]);
+                                //converts original total from quotes file to an integer to be used in calculations
+                                totali = atoi(totalcost[find]);
 
-                        //calculates new total
-                        newtotal = totali + difference;
+                                //calculates new total
+                                newtotal = totali + difference;
 
-                        //stores new total cost to quotes file
-                        itoa(newtotal,totalcost[find],10);
-                        ReWriteQuotesFile();  //Saves new total price to the file
-                        return 0;
-                        }// end if
-                        return 0;
-                }//end if
+                                //stores new total cost to quotes file
+                                itoa(newtotal,totalcost[find],10);
+                                ReWriteQuotesFile();  //Saves new total price to the file
+                                return 0;
+                                }// end if
+                                return 0;
+                        }//end if
 
-           }//end for
+                   }//end for
+        }//end if
+        else
+                {
+                cout<<"\nPlease ensure a reference has been entered.";
+                getch();
+                return 0;
+                }
 if(compare!=0)
         {
         //If there is not a match between the reference entered and those stored in the file then the following error message is outputted
-        cout<<"\n Quote reference not found.";
+        cout<<"\nQuote reference not found.";
         }//end if
 getch();
 return 0;
@@ -3603,6 +3975,7 @@ int compresult;
 int del;
 char looking[25];
 char result[2];
+int len;
 
 cout<<"\nDelete quote";
 cout<<"\n************";
@@ -3610,43 +3983,52 @@ ReadBackQuotesFile();
 cin.get();
 cout<<"\nEnter the quote reference of the quote you wish to delete: ";
 cin.getline(looking,25);      //quote to be found
-for(find=0;find<nqi;find++)   //searches through all the quotes in the file
+
+len=strlen(looking);
+if(len!=0)
         {
-        compare = strcmpi (looking,quoteref[find]);        //compares each quote reference in the file with the one entered
-        if(compare==0)   //If compatr ==0 then there is a match between the quote reference entered and one in the file
+        for(find=0;find<nqi;find++)   //searches through all the quotes in the file
                 {
-                //Outputs information regarding that quote to check its the correct to be deleted
-                cout<<"\nCustomer Reference: "<<custno[find];
-                LocateCust(custno[find]);  //Functions which finds customer information to also be outputted
-                cout<<"\nJob Description: "<<mainjobdesc[find];
-                cin.get();
-                cout<<"\nIs this the correct quote to be deleted (Y/N): ";
-                cin>>result;    //User confirms whether or not it is the correct quote
-                compresult=strcmpi(result,"Y");   //Compares the input with Y
-                if(compresult == 0)  //If the input is Y then the new number of days can be added, if it is N returns to the Quote Menu
+                compare = strcmpi (looking,quoteref[find]);        //compares each quote reference in the file with the one entered
+                if(compare==0)   //If compatr ==0 then there is a match between the quote reference entered and one in the file
                         {
-                        //Loops through and deletes all information for that quote
-                        for(del=find;del<nqi;del++)
+                        //Outputs information regarding that quote to check its the correct to be deleted
+                        cout<<"\nCustomer Reference: "<<custno[find];
+                        LocateCust(custno[find]);  //Functions which finds customer information to also be outputted
+                        cout<<"\nJob Description: "<<mainjobdesc[find];
+                        cin.get();
+                        cout<<"\nIs this the correct quote to be deleted (Y/N): ";
+                        cin>>result;    //User confirms whether or not it is the correct quote
+                        compresult=strcmpi(result,"Y");   //Compares the input with Y
+                        if(compresult == 0)  //If the input is Y then the new number of days can be added, if it is N returns to the Quote Menu
                                 {
-                                strcpy(quoteref[del], quoteref[del+1]);
-                                strcpy(custno[del], custno[del+1]);
-                                strcpy(quotedate[del], quotedate[del+1]);
-                                strcpy(mainjobdesc[del], mainjobdesc[del+1]);
-                                strcpy(numofdays[del], numofdays[del+1]);
-                                strcpy(labourq[del],labourq[del+1]);
-                                strcpy(mileage[del], mileage[del+1]);
-                                strcpy(vat[del], vat[del+1]);
-                                strcpy(stockcost[del],stockcost[del+1]);
-                                strcpy(totalcost[del], totalcost[del+1]);
-                                nqi=nqi -1;         //Decreases the number of quotes in the file by one
-                                itoa(nqi,nqc,10);
-                                ReWriteQuotesFile();  //Data is written to the file
+                                //Loops through and deletes all information for that quote
+                                for(del=find;del<nqi;del++)
+                                        {
+                                        strcpy(quoteref[del], quoteref[del+1]);
+                                        strcpy(custno[del], custno[del+1]);
+                                        strcpy(quotedate[del], quotedate[del+1]);
+                                        strcpy(mainjobdesc[del], mainjobdesc[del+1]);
+                                        strcpy(numofdays[del], numofdays[del+1]);
+                                        strcpy(labourq[del],labourq[del+1]);
+                                        strcpy(mileage[del], mileage[del+1]);
+                                        strcpy(vat[del], vat[del+1]);
+                                        strcpy(stockcost[del],stockcost[del+1]);
+                                        strcpy(totalcost[del], totalcost[del+1]);
+                                        nqi=nqi -1;         //Decreases the number of quotes in the file by one
+                                        itoa(nqi,nqc,10);
+                                        ReWriteQuotesFile();  //Data is written to the file
+                                        return 0;
+                                        }// end for
+                                }//end if
                                 return 0;
-                                }// end for
                         }//end if
-                        return 0;
-                }//end if
-        }//end for
+                }//end for
+        }//end if
+        else
+                {
+                cout<<"\nPlease ensure a quote reference is entered.";
+                }
 if(compare!=0)
         {
         //If there is not a match between the reference entered and those stored in the file then the following error message is outputted
@@ -3723,6 +4105,7 @@ char looking[25];
 int compare;
 int find;
 char pound = 156;
+int len;
 
 cout<<"\nView Quote by Quote Reference";
 cout<<"\n*****************************";
@@ -3730,32 +4113,42 @@ ReadBackQuotesFile();
 cin.get();
 
 cout<<"\nEnter quote reference: ";
-cin.getline(looking,25);                  //Quote reference to be found
-for(find=0;find<nqi;find++)               //Searches through all the quotes in the file
+cin.getline(looking,25);                 //Quote reference to be found
+len=strlen(looking);
+if(len!=0)
         {
-        compare = strcmpi(looking,quoteref[find]);      //Compares the quote references in the file with the one entered
-        if(compare == 0)   //If compare==0 then there is a match between the quote reference entered and one stored in the file
+        for(find=0;find<nqi;find++)               //Searches through all the quotes in the file
                 {
-                //Quote information is outputted to the screen
-                cout<<"\nCustomer reference: "<<custno[find];
-                LocateCust(custno[find]);   //Finds customer information to output with quote
-                cout<<"\n";
-                cout<<"\nJob Description: "<<mainjobdesc[find];
-                cout<<"\n";
-                cout<<"\nNumber of days worked: "<<numofdays[find];
-                cout<<"\n";
-                cout<<"\nPrice Breakdown";
-                cout<<"\n***************";
-                cout<<"\nMaterials:\t"<<pound<<stockcost[find];
-                cout<<"\nLabour: \t"<<pound<<labourq[find];
-                cout<<"\nMileage:\t"<<pound<<mileage[find];
-                cout<<"\nTotal Cost:\t"<<pound<<totalcost[find];
-                }// end if
-        }// end for
+                compare = strcmpi(looking,quoteref[find]);      //Compares the quote references in the file with the one entered
+                if(compare == 0)   //If compare==0 then there is a match between the quote reference entered and one stored in the file
+                        {
+                        //Quote information is outputted to the screen
+                        cout<<"\nCustomer reference: "<<custno[find];
+                        LocateCust(custno[find]);   //Finds customer information to output with quote
+                        cout<<"\n";
+                        cout<<"\nJob Description: "<<mainjobdesc[find];
+                        cout<<"\n";
+                        cout<<"\nNumber of days worked: "<<numofdays[find];
+                        cout<<"\n";
+                        cout<<"\nPrice Breakdown";
+                        cout<<"\n***************";
+                        cout<<"\nMaterials:\t"<<pound<<stockcost[find];
+                        cout<<"\nLabour: \t"<<pound<<labourq[find];
+                        cout<<"\nMileage:\t"<<pound<<mileage[find];
+                        cout<<"\nTotal Cost:\t"<<pound<<totalcost[find];
+                        }// end if
+                }// end for
+        }//end if
+        else
+                {
+                cout<<"\nPlease ensure a quote reference was entered.";
+                getch();
+                return 0;
+                }//end else
 if(compare!=0)
         {
         //If there is not a match between the reference entered and those stored in the file then the following error message is outputted
-        cout<<"\n Quote reference not found.";
+        cout<<"\nQuote reference not found.";
         }//end if
 getch();
 return 0;
@@ -3798,6 +4191,7 @@ int compare;
 int find;
 char looking[25];
 char pound = 156;
+int len;
 
 cout<<"\nView by customer reference";
 cout<<"\n**************************";
@@ -3807,30 +4201,41 @@ cin.get();
 cout<<"\nEnter customer reference: ";        //Customer reference to be found
 cin.getline(looking,25);
 
-for(find=0;find<nqi;find++)                 //All quotes are searched
+len=strlen(looking);
+
+if(len!=0)
         {
-        compare = strcmpi(looking,custno[find]);    //Compares the customer references stored within the quotes file with the customer reference entered
-        if(compare==0)   //If compare=0 then there is a match between the customer reference entered and one stored in the file
+        for(find=0;find<nqi;find++)                 //All quotes are searched
                 {
-                //Quote and customer information is outputted to the screen
-                cout<<"\nCustomer reference: "<<custno[find];
-                LocateCust(custno[find]);     //Uses the customer reference to find customer information from the customer file
-                cout<<"\n";
-                cout<<"\nDate quote was produced: "<<quotedate[find];
-                cout<<"\nJob Description: "<<mainjobdesc[find];
-                cout<<"\n";
-                cout<<"\nNumber of days worked: "<<numofdays[find];
-                cout<<"\n";
-                cout<<"\nPrice Breakdown";
-                cout<<"\n***************";
-                cout<<"\nMaterials:\t"<<pound<<stockcost[find];
-                cout<<"\nLabour: \t"<<pound<<labourq[find];
-                cout<<"\nMileage:\t"<<pound<<mileage[find];
-                cout<<"\nTotal Cost:\t"<<pound<<totalcost[find];
+                compare = strcmpi(looking,custno[find]);    //Compares the customer references stored within the quotes file with the customer reference entered
+                if(compare==0)   //If compare=0 then there is a match between the customer reference entered and one stored in the file
+                        {
+                        //Quote and customer information is outputted to the screen
+                        cout<<"\nCustomer reference: "<<custno[find];
+                        LocateCust(custno[find]);     //Uses the customer reference to find customer information from the customer file
+                        cout<<"\n";
+                        cout<<"\nDate quote was produced: "<<quotedate[find];
+                        cout<<"\nJob Description: "<<mainjobdesc[find];
+                        cout<<"\n";
+                        cout<<"\nNumber of days worked: "<<numofdays[find];
+                        cout<<"\n";
+                        cout<<"\nPrice Breakdown";
+                        cout<<"\n***************";
+                        cout<<"\nMaterials:\t"<<pound<<stockcost[find];
+                        cout<<"\nLabour: \t"<<pound<<labourq[find];
+                        cout<<"\nMileage:\t"<<pound<<mileage[find];
+                        cout<<"\nTotal Cost:\t"<<pound<<totalcost[find];
+                        getch();
+                        return 0;
+                        } // end if
+                }// end for
+        }//end if
+        else
+                {
+                cout<<"\nPlease ensure a customer reference was entered.";
                 getch();
                 return 0;
-                } // end if
-        }// end for
+                }
 if(compare!=0)
         {
         //If there is not a match between the reference entered and those stored in the file then the following error message is outputted
@@ -3950,6 +4355,7 @@ switch(invoicechoice)  //Allows different functions to be ran deoening on the me
                 {
                 //Error message is outputted if the user does not have the correct level of access
                 cout<<"\nNot authorised.";  //If access is too low this error message is outputted
+                getch();
                 }
              break;
              }
@@ -3991,6 +4397,13 @@ int endrange=0;
 int end=0;
 int payment=0;
 
+char dateinstart[30];
+int startbuff=0;
+char dateinend[30];
+int endbuff=0;
+char payin[30];
+int paybuff=0;
+
 cout<<"\nAdd Invoice";
 cout<<"\n***********";
 ReadBackInvoiceFile();
@@ -4018,27 +4431,42 @@ while(qref==0)  //While loop that controls validation routines to ensure that th
         qref= QuoteRefCheck(quotenum[nii]);
         }//end while
 
-while(start==0)   //While loop that controls validation routines to ensure that the start date is in the correct format: DD/MM/YYYY
+while(start==0 || startbuff==0)   //While loop that controls validation routines to ensure that the start date is in the correct format: DD/MM/YYYY
         {
         cout<<"\nEnter start date: ";
-        cin.getline(jobstartdate[nii],11);
-        start = DateValStart(jobstartdate[nii]);
+        cin.getline(dateinstart,30);
+        startbuff = Buffer(dateinstart,10);
+        if(startbuff!=0 && start==0)
+                {
+                start = DateValStart(dateinstart);
+                }//endif
         }// end while
+strcpy(jobstartdate[nii],dateinstart);
 
-while(end==0 || endrange==0)  //While loop that controls validation routines to ensure that the end date is in the correct format: DD/MM/YYYY  and is after the start date
+while(end==0 || endrange==0 || endbuff==0)  //While loop that controls validation routines to ensure that the end date is in the correct format: DD/MM/YYYY  and is after the start date
         {
         cout<<"\nEnter end date: ";
-        cin.getline(jobenddate[nii],11);
-        end = DateValEnd(jobenddate[nii]);
-        endrange = RangeDate(jobenddate[nii]);
+        cin.getline(dateinend,30);
+        endbuff = Buffer(dateinend,10);
+        if(endbuff!=0 && (endrange==0||end==0))
+                {
+                end = DateValEnd(dateinend);
+                endrange = RangeDate(dateinend);
+                }//endif
         }// end while
+strcpy(jobenddate[nii],dateinend);
 
-while(payment ==0)   //While loop that controls validation routines to ensure that the payment status is either Y or N
+while(payment ==0 || paybuff==0)   //While loop that controls validation routines to ensure that the payment status is either Y or N
         {
         cout<<"\nIs the job paid for (Y/N): ";
-        cin.getline(paid[nii],2);
-        payment = RangePaid(paid[nii]);
+        cin.getline(payin,30);
+        paybuff = Buffer(payin,1);
+        if(paybuff!=0 && payment==0)
+                {
+                payment = RangePaid(payin);
+                }//end if
         }// end while
+strcpy(paid[nii],payin);
 
 nii = nii +1;    //Increases the number of invoices stored in the file by one
 itoa(nii,nic,10);
@@ -4056,27 +4484,43 @@ int find;
 int compare;
 int len;
 len=strlen(invoice);   //strlen extracts the number of characetrs entered and stores it under the variable length
+int position;
 
 ReadBackInvoiceFile();
 if(len!=0)   //Checks that data had been entered
         {
-        for(find=0;find<nii;find++)  //loops through all the invoices file
+        for(position=0;position<len;position++)
                 {
-                compare = strcmpi(invoiceref[find], invoice);    //compares each invoice reference with the one entered
-                if (compare == 0)   //If compare==0 then there is a match between the invoice reference entered and one stored in the file
+                if(isdigit(invoice[position]))
                         {
-                        //Error messsage is outputted to tell the user that the reference is already in use
-                        cout<<"\n Invoice reference already in use. Please try again.";
-                        uniqueref = 0;
-                        } //endif
-                }//endfor
-        }//endif
+                        for(find=0;find<nii;find++)  //loops through all the invoices file
+                                {
+                                compare = strcmpi(invoiceref[find], invoice);    //compares each invoice reference with the one entered
+                                if (compare == 0)   //If compare==0 then there is a match between the invoice reference entered and one stored in the file
+                                        {
+                                        //Error messsage is outputted to tell the user that the reference is already in use
+                                        cout<<"\nInvoice reference already in use. Please try again.";
+                                        uniqueref = 0;
+                                        } //endif
+                                }//endfor
+                        }//endif
+                        else
+                                {
+                                cout<<"\nPlease ensure a number was entered for the reference.";
+                                getch();
+                                uniqueref=0;
+                                return uniqueref;
+                                }//end else
+                }//end for
+        }//end if
         else
                 {
                 //Error message is outputted to alert the user no data has been entered
                 cout<<"\nPlease ensure an  invoice reference has been entered.";
+                getch();
+                uniqueref=0;
+                return uniqueref;
                 }//end else
-
 return uniqueref;
 }
 
@@ -4122,13 +4566,18 @@ for (find = 0; find < nqi; find++)      //searches through all the quotes in the
 	if (compare == 0)  //If cmopare=0 then there is a match between the quote reference entered and one stored in the file
 		{
 		uniqueref = 1;
+                return uniqueref;
 		} //endif found record
+                else
+                        {
+                        //Error message is outputted if there is not a match between the quote reference entered and one stored in the file
+                        cout<<"\nQuote reference not found.";
+                        getch();
+                        uniqueref=0;
+                        return uniqueref;
+                        }//end else
 	}//endfor
-if(compare!=0)
-        {
-        //Error message is outputted if there is not a match between the quote reference entered and one stored in the file
-        cout<<"\nQuote reference not found.";
-        }//end if
+
 return uniqueref;
 }
 
@@ -4137,7 +4586,7 @@ int DateValStart(char date[11])
 {
 //local variables
 int valid =0;
-
+float yearfloat;
 int len = strlen(date);    //strlen extracts the number of characetrs entered and stores it under the variable len
 
 
@@ -4146,7 +4595,7 @@ if(len == 10)  //Checks that the length is correct
         if(date[2] == '/' && date[5] == '/')   //Checks that the forward slash are in the right place
                 {
                 sscanf(&date[6],"%d",&yearstart);    //Splits the date entered into days, month and year
-                sscanf(&date[4],"%d",&monthstart);
+                sscanf(&date[3],"%d",&monthstart);
                 sscanf(&date[0],"%d",&daystart);
                 if(monthstart==4 || monthstart==6 || monthstart==9 || monthstart==11)
                         {
@@ -4174,31 +4623,35 @@ if(len == 10)  //Checks that the length is correct
 
                 if(monthstart==2)
                         {
-                        sscanf(&date[7],"%f",&yearstart);
-                        if(floor(yearstart/4)== (yearstart/4))      //If month is feb, checks if its a leap year
+                        yearfloat = yearstart;  //Converts integer to a float for division
+                        if(floor(yearfloat/4)== (yearfloat/4))      //If month is feb, checks if its a leap year
                                 {
                                 if(daystart>= 1 && daystart <=29)
-                                        {                               //If it is allow up to the 29th
+                                        {
+                                        //If it is allow up to the 29th
                                         valid = 1;
                                         }//endif-fordaysfeb29
                                 else
                                         {
                                         cout<<"Make sure the date is between the 1st and the 29th";
-                                        }
-                                }
-
-                        if(floor(yearstart/4)!= (yearstart/4))               //If its not a leap year only allow up the 28th
+                                        }//end else
+                                }//end if
+                                else
                                         {
-                                        if(daystart>= 1 && daystart <=28)
+                                        if(floor(yearfloat/4)!= (yearfloat/4))      //If its not a leap year only allow up the 28th
                                                 {
-                                                valid = 1;
-                                                }//endif-fordaysfeb28
-                                        else
-                                                {
-                                                cout<<"Make sure the date is between the 1st and the 28th";
-                                                }
-                                        }//endif
-                                }
+                                                if(daystart>= 1 && daystart <=28)
+                                                        {
+                                                        valid = 1;
+                                                        }//endif-fordaysfeb28
+                                                else
+                                                        {
+                                                        cout<<"Make sure the date is between the 1st and the 28th";
+                                                        }
+                                                }//endif
+                                        }//end else
+                                }//endif
+
 
                 }//endif-forslashes
         else
@@ -4211,7 +4664,6 @@ else
         {
         cout<<"Please make sure your date is of length 10";
         }//endelse
-
 return valid;
 }
 
@@ -4344,7 +4796,7 @@ else
 if(valid!=1)
         {
         //Error message is outputted if the date is not after the start date
-        cout<<"\n Date entered must be after the start date.";
+        cout<<"\nDate entered must be after the start date.";
         }//end if
 
 return valid;
@@ -4367,7 +4819,7 @@ if(yescomp==0 || nocomp==0)  //If either of the comparisons above match payment 
         else
                 {
                 //Error message is outputted if the payment status entered was not Y or N
-                cout<<"\n Please ensure the payment status is Y or N";
+                cout<<"\nPlease ensure the payment status is Y or N";
                 }//end else
 return valid;
 }
@@ -4410,7 +4862,15 @@ switch(changeinvoicechoice) //Allows different functions to be run depending on 
              }
         case 2: //If changeinvoicechoice=2 then the IPay function is ran
              {
-             IPay();
+             if(level>=2)
+                {
+                IPay();
+                }
+             else
+                {
+                cout<<"\nNot authorised.";
+                getch();
+                }
              break;
              }
 
@@ -4446,6 +4906,11 @@ int start=0;
 int end=0;
 int endrange=0;
 
+char enddate[30];
+char startdate[30];
+int startbuff=0;
+int endbuff=0;
+
 cout<<"\nChange Dates Worked";
 cout<<"\n*******************";
 ReadBackInvoiceFile();
@@ -4471,20 +4936,29 @@ for(find =0; find<nii; find++)    //Searches through all the invoices in the inv
                         {
                         cin.get();
                         //Validates new dates upon entry
-                        while(start==0)      //While loop that controls the validation function which ensures start date is in the correct format: DD/MM/YYYY
+                        while(start==0||startbuff==0)      //While loop that controls the validation function which ensures start date is in the correct format: DD/MM/YYYY
                                 {
                                 cout<<"\nEnter start date: ";
-                                cin.getline(jobstartdate[find],11);
-                                start = DateValStart(jobstartdate[find]);
+                                cin.getline(startdate,30);
+                                startbuff = Buffer(startdate,10);
+                                if(startbuff!=0 && start==0)
+                                        {
+                                        start = DateValStart(jobstartdate[find]);
+                                        }//end if
                                 }// end while
-
-                        while(end==0 || endrange==0)
+                        strcpy(jobstartdate[find],startdate);
+                        while(end==0 || endrange==0 || endbuff==0)
                                 {
                                 cout<<"\nEnter end date: ";  //While loop that controls the validation function which ensures the end date is in the correct format: DD/MM/YYYY and is after the start date
-                                cin.getline(jobenddate[find],11);
-                                end = DateValEnd(jobenddate[find]);
-                                endrange = RangeDate(jobenddate[find]);
+                                cin.getline(enddate,30);
+                                endbuff = Buffer(enddate,10);
+                                if(endbuff!=0 && (endrange==0 || end==0))
+                                        {
+                                        end = DateValEnd(enddate);
+                                        endrange = RangeDate(enddate);
+                                        }//endif
                                 }// end while
+                        strcpy(jobenddate[find],enddate);
                         ReWriteInvoiceFile();  //Wrires information to the invoice file
                         }//end if
                         return 0;
@@ -4509,6 +4983,8 @@ int compresult;
 int find;
 char result[2];
 int payment=0;
+char payin[30];
+int paybuff=0;
 
 cout<<"\nChange Payment Status";
 cout<<"\n*********************";
@@ -4535,12 +5011,17 @@ for(find =0; find<nii; find++)          //Searches through all the invoices in t
                         {
                         cin.get();
                         //Validates payment status upon entry
-                        while(payment ==0)     //While loop that controls the validation function to ensure the payment status is either Y or N
+                        while(payment ==0 || paybuff==0)     //While loop that controls the validation function to ensure the payment status is either Y or N
                                 {
                                 cout<<"\nIs the job paid for (Y/N): ";
-                                cin.getline(paid[find],2);
-                                payment = RangePaid(paid[find]);
+                                cin.getline(payin,30);
+                                paybuff = Buffer(payin,1);
+                                if(paybuff!=0 && payment==0)
+                                        {
+                                        payment = RangePaid(payin);
+                                        }//endif
                                 }// end while
+                        strcpy(paid[find],payin);
                         ReWriteInvoiceFile(); //Writes new information to the file
                         }//end if
                         return 0;
@@ -4963,6 +5444,7 @@ switch(stockchoice) //Allows different functions to be ran deoening on the menu 
                 {
                 //If they do not have the correct level of access following error message is outputted
                 cout<<"\nNot authorised.";
+                getch();
                 }
              break;
              }
@@ -5012,18 +5494,26 @@ int price=0;
 int vol=0;
 int quant=0;
 
+int refbuff=0;
+char refin[30];
+
 ReadBackStockFile();
 cout<<"\nAdd Stock";
 cout<<"\n*********";
 
 //Validation routines for information entered
 cin.get();
-while(ref==0)   //While loop that controls validation to ensure that the stock reference entered isn't already in use
+while(ref==0 || refbuff==0)   //While loop that controls validation to ensure that the stock reference entered isn't already in use
         {
         cout<<"\nEnter stock reference: ";
-        cin.getline(stockref[nsti],3);
-        ref = UniqueStock(stockref[nsti]);
+        cin.getline(refin,30);
+        refbuff=Buffer(refin,1);
+        if(refbuff!=0 && ref==0)
+                {
+                ref = UniqueStock(refin);
+                }//endif
         } // end while
+strcpy(stockref[nsti],refin);
 
 while(col == 0)  //While loop that controls validation to ensure that a colour is entered
         {
@@ -5056,7 +5546,7 @@ while(vol == 0)    //While loop that controls validation to ensure that the volu
 while(quant == 0)   //While loop that controls validation to ensure that the quantity is within a suitable range
         {
         cout<<"\nEnter quantity: ";
-        cin.getline(quantity[nsti],3);
+        cin.getline(quantity[nsti],4);
         quant = RangeQuantity(quantity[nsti]);
         } // end while
 
@@ -5075,6 +5565,7 @@ int uniqueref=1;
 int find;
 int compare;
 int len;
+int position;
 
 len=strlen(stock);   //strlen extracts the number of characetrs entered and stores it under the variable len
 if(len==0)    //Checks data is entered
@@ -5082,22 +5573,36 @@ if(len==0)    //Checks data is entered
         //Error message is outputted if no data has been entered
         cout<<"\nPlease ensure you have entered a stock reference.";
         uniqueref=0;
+        getch();
+        return uniqueref;
         }
-
-ReadBackStockFile();
-for(find=0;find<nsti;find++)      //searches through all the stock in the file
-	{
-	compare = strcmpi(stockref[find], stock); //compares the stock references in the file with the one entered
-	if (compare == 0)   //if compare=0 then there is a match between the stock reference passed and the stock reference entered
-		{
-                //If a match is found, user is not allowed to use that reference
-		uniqueref = 0;
-		} //endif
-	}//endfor
+for(position=0;position<len;position++)     //loops through all characters in inout
+        {
+        if(isdigit(stock[position]))      //Checks to see if it an integer, if it is the rest of the loop runs
+                {
+                ReadBackStockFile();
+                for(find=0;find<nsti;find++)      //searches through all the stock in the file
+                        {
+                        compare = strcmpi(stockref[find], stock); //compares the stock references in the file with the one entered
+                        if (compare == 0)   //if compare=0 then there is a match between the stock reference passed and the stock reference entered
+                                {
+                                //If a match is found, user is not allowed to use that reference
+                                uniqueref = 0;
+                                } //endif
+                        }//endfor
+                }//end if
+                else
+                        {
+                        cout<<"\nPlease ensure the stock reference is a number.";
+                        uniqueref=0;
+                        getch();
+                        return uniqueref;
+                        }//end else
+        }//endfor
 if (uniqueref==0)
 	{
         //Error message is outputted if that reference is in use
-	cout<<"\n Stock reference already in use. Please try again.";
+	cout<<"\nStock reference cannot be used. Please try again";
 	getch() ;
 	} // end if error
 return uniqueref;
@@ -5113,7 +5618,7 @@ length=strlen(presence);  //strlen extracts the number of characetrs entered and
 if(length==0)  //Checks to see if the length is 0 as if it is no data has been entered
         {
         //Error message is outputted if length = 0
-        cout<<"Please enter a colour.";
+        cout<<"\nPlease enter a colour.";
         }//endif
 return length;
 }
@@ -5140,11 +5645,7 @@ if(matt==0 || gloss==0 || silk==0 || ext==0)  //If the input matches one of the 
         else
                 {
                 //Error message is outputted to the screen if the input does not match any paint types
-                cout<<"\n Please ensure you have entered a valid paint type from the list below: ";
-                cout<<"\n Matt";
-                cout<<"\n Gloss";
-                cout<<"\n Silk";
-                cout<<"\n Exterior";
+                cout<<"\nPlease ensure you have entered a valid paint type.";
                 }//end else
 return valid;
 }
@@ -5156,11 +5657,24 @@ int RangePrice(char rprice[3])
 int valid = 0;
 int intprice;
 int len;
-
+int position;
 len= strlen(rprice); //strlen extracts the number of characetrs entered and stores it under the variable length
 
 
+
 intprice = atoi(rprice);         //converts price to an integer
+
+//Checks that an integer has been entered
+for(position=0;position<len;position++)
+        {
+        if(isalpha(rprice[position]))
+                {
+                cout<<"\nPlease ensure you have entered a number for the price of the stock.";
+                getch();
+                valid=0;
+                return valid;
+                }//end if
+        }//end for
 if(len!=0)   //Checks data has been entered
         {
         if(intprice <=100 && intprice >=10)   //Range check
@@ -5169,26 +5683,39 @@ if(len!=0)   //Checks data has been entered
                 } // end if
         else
                 {   //Error message is outputted if its not in the correct range
-                cout<<"\n Please ensure the price entered is within the range 10-100.";
+                cout<<"\nPlease ensure the price entered is within the range 10-100.";
                 }//end else
         }//end if
         else
                 {
                 //Error message is outputted if no data has been entered
-                cout<<"\n Please ensure a price was entered within the range 10-100";
+                cout<<"\nPlease ensure a price was entered within the range 10-100";
                 }//end else
+
 return valid;
 }
 
 //Validation routine that checks the volume entered is reasonable
-int RangeVolume(char vol[3])
+int RangeVolume(char vol[4])
 {
 //local variables
 int valid = 0;
 int intvol;
 int len;
 len=strlen(vol);   //strlen extracts the number of characetrs entered and stores it under the variable len
+int position;
 
+//Checks that an integer has been entered
+for(position=0;position<len;position++)
+        {
+        if(isalpha(vol[position]))
+                {
+                cout<<"\nPlease ensure you have entered a number for the volume.";
+                getch();
+                valid=0;
+                return valid;
+                }//end if
+        }//end for
 
 intvol = atoi(vol);  //converts volume to an integer
 
@@ -5201,7 +5728,7 @@ if(len!=0)
         else
                 {
                 //Error message is outputted if the volume is not in the range
-                cout<<"\n Please ensure the volume entered is in the ranhe 5-60.";
+                cout<<"\nPlease ensure the volume entered is in the range 5-60.";
                 }//end else
         }//end if
         else
@@ -5213,33 +5740,46 @@ return valid;
 }
 
 //Validation routine that checks that the quantity entered is reasonable
-int RangeQuantity(char quant[3])
+int RangeQuantity(char quant[4])
 {
 //local variables
 int valid = 0;
 int intquant;
 int len;
+int position;
 
 len = strlen(quant);   //strlen extracts the number of characetrs entered and stores it under the variable len
 
 intquant = atoi(quant);  //converts it to an integer
 
+//Checks that an integer has been entered
+for(position=0;position<len;position++)
+        {
+        if(isalpha(quant[position]))
+                {
+                cout<<"\nPlease ensure you have entered a number for the quantity.";
+                getch();
+                valid=0;
+                return valid;
+                }//end if
+        }//end for
+
 if(len!=0)   //Checks data has been entered
         {
-        if(intquant >=1 && intquant <20)  //Range check
+        if(intquant >=1 && intquant <=20)  //Range check
                 {
                 valid = 1;
                 } // end if
         else
                 {
                 //Error message is outputted if the volume is not in the range
-                cout<<"\n Please ensure the quantity entered is correct.";
+                cout<<"\nPlease ensure the quantity entered is in the range 1-20.";
                 } // end else
         }//end if
         else
                 {
                 //Error message is outputted if no data has been entered
-                cout<<"\n Please ensure a quantity has been entered.";
+                cout<<"\nPlease ensure a quantity has been entered in the range 1-20.";
                 }//end else
 return valid;
 }
@@ -5320,32 +5860,34 @@ cout<<"\n******************";
 ReadBackStockFile();
 cin.get();
 
+cin.get();
 cout<<"\nEnter the stock reference of the stock you want to change: ";
 cin.getline(looking,25);           //stock reference to be found
 for(find =0; find<nsti; find++)    //searches through all the stock in the file
         {
         compare = strcmpi(looking, stockref[find]); //compares the stock references in the file with the one entered
-        if(compare ==0)                      //If a match is found, checks with the user that it is the correct item of stock
+        if(compare ==0)  //If compare ==0 then there is a stock reference in the file the same as the one entered by the user
                 {
+                //Outputs stock information to the screen to confirm it is the right item of stock
                 cout<<"\nCurrent quantity: "<<quantity[find];
                 cout<<"\nColour: "<<colour[find];
                 cout<<"\nType: "<<type[find];
                 cout<<"\nStock Price: "<<stockprice[find];
                 cin.get();
                 cout<<"\nIs this the correct item of stock to be amended (Y/N): ";
-                cin>>result;
-                compresult=strcmpi(result,"Y");                                    //If user enters 1, returns to change menu
-                if(compresult == 0)                                        //If user enters 0, price can be changed
+                cin>>result; //User confirms whether or not it is the correct item of stock
+                compresult=strcmpi(result,"Y"); //Compares the input with Y
+                if(compresult == 0) //If the input is Y then the new price can be added, If input is N returns to Change Stock Menu
                         {
                         cin.get();
                         //Validates stock price upon entry
-                        while(price == 0)
+                        while(price == 0)    //While loop that controls the validation to ensure that the price entered is within a suitable range
                               {
                               cout<<"\nEnter stock price: ";
                               cin.getline(stockprice[find],15);
                               price = RangePrice(stockprice[find]);
                               }// end while
-                        ReWriteStockFile();           //new price saved to the file
+                        ReWriteStockFile();     //New price saved to the file
                         return 0;
                         }// end if
                         return 0;
@@ -5353,6 +5895,7 @@ for(find =0; find<nsti; find++)    //searches through all the stock in the file
            }//end for
 if(compare!=0)
         {
+        //If there is not a stock reference in the file the same as the one entered by the user then the following error message is outputted
         cout<<"\nStock reference has not been found.";
         }//end if
 getch();
@@ -5375,27 +5918,28 @@ cout<<"\n*********************";
 ReadBackStockFile();
 cin.get();
 
-
+cin.get();
 cout<<"\nEnter the stock reference of the stock items quantity you want to change: ";
 cin.getline(looking,25);            //item of stock to be found
 for(find =0; find<nsti; find++)     //searches through all the stock in the file
         {
         compare = strcmpi(looking, stockref[find]);//compares all stock references in the file with the one entered
-        if(compare ==0)
+        if(compare ==0) //If compare ==0 then there is a stock reference in the file the same as the one entered by the user
                 {
-                cout<<"\nCurrent quantity: "<<quantity[find];   //If a match is found, information about the item of stock is outputted to ensure its the correct item
+                //Information about the item of stock is outputted to ensure its the correct item
+                cout<<"\nCurrent quantity: "<<quantity[find];
                 cout<<"\nColour: "<<colour[find];
                 cout<<"\nType: "<<type[find];
                 cout<<"\nStock Price: "<<stockprice[find];
                 cin.get();
                 cout<<"\nIs this the correct item of stock to be amended (Y/N): ";
-                cin>>result;
-                compresult=strcmpi(result,"Y");                       //If user enters 1, returns to change menu
-                if(compresult == 0)                    //If user enters 0, quantity can be updated
+                cin>>result;  //User confirms whether or not it is the correct item of stock
+                compresult=strcmpi(result,"Y"); //Compares the input with Y
+                if(compresult == 0) //If the input is Y then the new quantity can be added, If input is N returns to Change Stock Menu
                         {
                         cin.get();
                         //Validates quantity entered
-                        while(quant == 0)
+                        while(quant == 0)   //While loop that controls the validation to ensure that the quantity entered is within a suitable range
                                 {
                                 cout<<"\nEnter quantity: ";
                                 cin.getline(quantity[find],3);
@@ -5409,6 +5953,7 @@ for(find =0; find<nsti; find++)     //searches through all the stock in the file
            }//end for
 if(compare!=0)
         {
+        //If there is not a stock reference in the file the same as the one entered by the user then the following error message is outputted
         cout<<"\nStock reference has not been found.";
         }//end if
 getch();
@@ -5425,6 +5970,10 @@ int compresult;
 int del;
 char looking[25];
 char result[2];
+int len;
+int position;
+
+
 
 cout<<"\nDelete stock";
 cout<<"\n************";
@@ -5433,36 +5982,52 @@ cin.get();
 
 cout<<"\nEnter the stock reference of the item of stock you wish to delete: ";
 cin.getline(looking,25);           //item of stock to be found
-for(find=0;find<nsti;find++)       //searches through all the stock in the file
+
+len=strlen(looking);
+
+if(len!=0)
         {
-        compare = strcmpi (looking,stockref[find]); //compares each stock reference in the file with the one entered
-        if(compare==0)                       //If a match is found, information regarding that item is outputted to ensure its the correct one to be deleted
+        for(find=0;find<nsti;find++)       //searches through all the stock in the file
                 {
-                cout<<"\nColour: "<<colour[find];
-                cout<<"\nType: "<<type[find];
-                cout<<"\nIs this the correct item of stock to be deleted(Y/N): ";
-                cin>>result;
-                compresult=strcmpi(result,"Y");
-                if(compresult == 0)              //If user enters 1, returns to stock menu
+                compare = strcmpi (looking,stockref[find]); //compares each stock reference in the file with the one entered
+                if(compare==0)   //If compare ==0 then there is a stock reference in the file the same as the one entered by the user
                         {
-                        for(del=find;del<nsti;del++)      //If user enters 0, item of stock is deleted
+                        //Information regarding that item is outputted to ensure its the correct one to be deleted
+                        cout<<"\nColour: "<<colour[find];
+                        cout<<"\nType: "<<type[find];
+                        cout<<"\nIs this the correct item of stock to be deleted(Y/N): ";
+                        cin>>result; //User confirms whether or not it is the correct item of stock
+                        compresult=strcmpi(result,"Y"); //Compares the input with Y
+                        if(compresult == 0) //If the input is Y then the new quantity can be added, If input is N returns to Stock Menu
                                 {
-                                strcpy(stockref[del], stockref[del+1]);
-                                strcpy(quantity[del], quantity[del+1]);
-                                strcpy(colour[del], colour[del+1]);
-                                strcpy(volume[del], volume[del+1]);
-                                strcpy(type[del], type[del+1]);
-                                strcpy(stockprice[del], stockprice[del+1]);
-                                nsti=nsti -1;    //Decreases the number of stock stored in the file by one
-                                itoa(nsti,nstc,10);
-                                ReWriteStockFile();  //Deletes information from the file
-                                }// end for
+                                 //Loops through and deletes all information for that item of stock
+                                for(del=find;del<nsti;del++)
+                                        {
+                                        strcpy(stockref[del], stockref[del+1]);
+                                        strcpy(quantity[del], quantity[del+1]);
+                                        strcpy(colour[del], colour[del+1]);
+                                        strcpy(volume[del], volume[del+1]);
+                                        strcpy(type[del], type[del+1]);
+                                        strcpy(stockprice[del], stockprice[del+1]);
+                                        nsti=nsti -1;    //Decreases the number of stock stored in the file by one
+                                        itoa(nsti,nstc,10);
+                                        ReWriteStockFile();  //Deletes information from the file
+                                        }// end for
+                                }//end if
+                                return 0;
                         }//end if
-                        return 0;
-                }//end if
-        }//end for
+                }//end for
+        }//end if
+        else
+                {
+                //Error messag outputted if no reference is entered
+                cout<<"\nNo stock reference has been entered.";
+                getch();
+                return 0;
+                }//end else
 if(compare!=0)
         {
+        //If there is not a stock reference in the file the same as the one entered by the user then the following error message is outputted
         cout<<"\nStock reference has not been found";
         }//end if
 
@@ -5470,10 +6035,11 @@ getch();
 return 0;
 }
 
-//While loop to output view stock menu
+//This function determines whether or not the view stock menu should be outputted to the screen
 int ViewStock()
 {
 int viewstatus=0;
+//While loop to output view stock menu
 while(viewstatus != 3)
         {
         viewstatus = ViewStockMenu();
@@ -5482,9 +6048,10 @@ getch();
 return 0;
 }
 
-//Outputs view stock menu
+//Outputs view stock menu options to the user and allows them to choose one of them to run a specific function
 int ViewStockMenu()
 {
+//Outputs view stock menu
 int viewstockchoice;
 cout<<"\n \t View Stock Information";
 cout<<"\n \t **********************\n \n";
@@ -5496,25 +6063,26 @@ cout<<"\n \t Enter choice: ";
 getch();
 cin>>viewstockchoice;    //Inputted menu choice from user
 clrscr();
-switch(viewstockchoice)
+switch(viewstockchoice)  //Allows different menu options to be ran depending on the menu option entered by the user
         {
-        case 1:
+        case 1:  //If viewstockchoice=1 then the StID function is ran
              {
              StID();
              break;
              }
-        case 2:
+        case 2: //If viewstockchoice=2 then the StSortQ function is ran
              {
-             StSortQ();       //Different functions that can be run depending on user input
+             StSortQ();
              break;
              }
 
-        case 3:
+        case 3: //If viewstockchoice=3 then it returns to the stock menu
              {
              break;
              }
-        default:   //If user inputs a wrong digit the following message is outputted
+        default:
                {
+               //If user inputs a wrong digit the following error message is outputted
                cout<<"\nPlease enter a number between 1 and 3.";
                getch();
                break;
@@ -5545,8 +6113,9 @@ cin.getline(looking,25);          //item of stock to be found
 for(find=0;find<nsti;find++)      //searches through all the stock in the file
         {
         compare = strcmpi(looking,stockref[find]);  //compares each stock reference in the file with the one entered
-        if(compare == 0)
-                {                                     //If a match is found, the following information is outputted to the screen
+        if(compare == 0) //If compare ==0 then there is a stock reference in the file the same as the one entered by the user
+                {
+                //Stock information is outputted to the screen
                 cout<<"\nColour: "<<colour[find];
                 cout<<"\nStock Price: "<<stockprice[find];
                 cout<<"\nQuantity: "<<quantity[find];
@@ -5558,6 +6127,7 @@ for(find=0;find<nsti;find++)      //searches through all the stock in the file
         }// end for
 if(compare!=0)
         {
+        //If there is not a stock reference in the file the same as the one entered by the user then the following error message is outputted
         cout<<"\nStock reference has not been found.";
         getch();
         }//end if 
@@ -5578,7 +6148,8 @@ int count;
 ReadBackStockFile();
 for(count=0;count<nsti;count++)
         {
-        strcpy(tempquant,quantity[count]);    //Copies values to temporary variables for sort
+        //Copies values to temporary variables for sort
+        strcpy(tempquant,quantity[count]);
         sscanf(&tempquant[0],"%d",&intquant[count]);
         strcpy(sref[count],stockref[count]);
         getch();
@@ -5625,13 +6196,34 @@ for(position=0;position<n;position++)
         {
         cout<<"\nStock Reference: "<<sref[position];
         cout<<"\nQuantity: "<<intquant[position];
-        cout<<"\nColour: "<<colour[position];
-        cout<<"\nType: "<<type[position];
+        StockInformation(sref[position]);
         cout<<"\n";
         }//end for
 getch();
 }
 
+//Routine which finds stock information to output in the sort
+int StockInformation(char ref[3])
+{
+//local variables
+int find;
+int compare;
+
+ReadBackStockFile;
+
+for(find=0;find<nsti;find++)  //loops through all the stock stored in the stock file
+        {
+        compare = strcmpi(ref,stockref[find]);   //compares the stock reference being sorted to the ones in the file
+        if(compare==0) //If compare==0 then there is a match
+                {
+                //Outputs stock information to be in the sort
+                cout<<"\nColour: "<<colour[find];
+                cout<<"\nType: "<<type[find];
+                }//end if
+        }//end for
+getch();
+return 0;
+}
 //Routine that shows which items of stock may need re-ordering
 int ViewLowStock()
 {
@@ -5644,7 +6236,8 @@ for(find=0;find<nsti;find++)  //searches through all stock in the file
         quant = atoi(quantity[find]);  //converts quantity of stock to an integer
         if(quant<2)
                 {
-                cout<<"\nTHE STOCK BELOW IS CURRENTLY LOW IN STOCK";     //if quantity is low, follwoing information is outputted
+                //If quantity is low, follwoing information is outputted
+                cout<<"\nTHE STOCK BELOW IS CURRENTLY LOW IN STOCK";
                 cout<<"\n*****************************************";
                 cout<<"\nStock reference: "<<stockref[find];
                 cout<<"\nQuantity: "<<quantity[find];
@@ -5655,6 +6248,7 @@ getch();
 return 0;
 }
 
+//Reads all stock information from the file
 int ReadBackStockFile()
 {
 int count;
@@ -5674,6 +6268,7 @@ fin.close();
 return 0;
 }
 
+//Writes in new stock information to the file
 int ReWriteStockFile()
 {
 int count;
@@ -5698,10 +6293,11 @@ fout.close();
 return 0;
 }
 
-//While loop to output schedule menu
+//This function determines whether or not the schedule menu should be outputted to the screen
 int Schedule()
 {
 int schedulestatus=0;
+//While loop to output schedule menu
 while(schedulestatus != 6)
         {
         schedulestatus = ScheduleMenu();
@@ -5710,10 +6306,11 @@ getch();
 return 0;
 }
 
-//Outputs schedule menu to the screen
+//Outputs schedule menu options to the user and allows them to choose one of them
 int ScheduleMenu()
 {
 int schedulechoice;
+//Outputs schedule menu to the screen
 cout<<"\n \t Schedule Menu";
 cout<<"\n \t *************\n \n";
 cout<<"\n \t 1. Add Booking";
@@ -5727,49 +6324,60 @@ cout<<"\n \t Enter choice: ";
 getch();
 cin>>schedulechoice;  //Input from the user 
 clrscr();
-switch(schedulechoice)
+switch(schedulechoice) //Allows different functions to be ran deoening on the menu option entered by the user
         {
-        case 1:
+        case 1: //If schedulechoice=1 then the AddBooking function is ran
              {
              AddBooking();
              break;
              }
-        case 2:
+        case 2: //If schedulechoice=2 then the ChangeBooking function is ran
              {
-             if(level>=2)              //User is only allowed access if they have the correct level of access if not following message is outputted              
+             if(level>=2)  //User logged on is only allowed access if they have the correct level of access of 2 or 3
                 {
                 ChangeBooking();
                 }
              else
                 {
+                //If the user logged on does not have the correct level of access then the following error message is outputted
                 cout<<"\nNot authorised.";
+                getch();
                 }
-             break;
-             }                                              //Different functions that can be run depending on user input
-
-        case 3:
-             {
-             DeleteBooking();
              break;
              }
 
-        case 4:
+        case 3: //If schedulechoice=3 then the DeleteBooking function is ran
+             {
+             if(level>=2)
+                {
+                DeleteBooking();
+                }
+             else
+                {
+                cout<<"\nNot authorised.";
+                getch();
+                }
+             break;
+             }
+
+        case 4: //If schedulechoice=4 then the ViewBooking function is ran
              {
              ViewSchedule();
              break;
              }
-        case 5:
+        case 5:  //If schedulechoice=5 then the ClearBooking function is ran
              {
              ClearSchedule( );
              break;
              }
 
-        case 6:
+        case 6:  //If schedulechoice=6 then it returns to the main menu
              {
              break;
              }
-        default:  //If user enters a wrong digit following error message is outputted
+        default:
                {
+               //If user enters a wrong digit following error message is outputted
                cout<<"\nPlease enter a number between 1 and 5.";
                getch();
                break;
@@ -5793,51 +6401,66 @@ int endtime=0;
 char bookingdate[12];
 int endhour;
 
+char ref[3];
+char stime[3];
+char etime[3];
+char datein[30];
+int datebuff=0;
+
 ReadBackScheduleFile();
 cout<<"\nAdd Booking";
 cout<<"\n***********";
 
 //Validates information upon entry
-while(staffref==0)
+
+while(staffref==0)   //While loop that controls validation to ensure that the staff reference entered isn't already in use
         {
+        cin.get();
         cout<<"\nEnter staff member: ";
-        cin>>staff;
+        cin.getline(ref,3);
+        staff = atoi(ref);
         staffref = StaffRefCheck(staff);
         }//end while
 
-while(qref==0)
+while(qref==0)  //While loop that controls validation routines to ensure that the quote reference entered exists
         {
         cout<<"\nEnter quote reference: ";
-        cin>>quoteno;
-        itoa(quoteno,addref,10);
+        cin.getline(addref,3);
+        quoteno = atoi(addref);
         qref = QuoteRefCheckBooking(quoteno);
         } //end while
 
 cin.get();
-while(dateval==0 || datesyst==0)
+while(dateval==0 || datesyst==0 || datebuff==0)  //While loop that controls validation to ensure that the date entered is in the correct format: DD/MM/YYYY and date is in the future
         {
         cout<<"\nEnter date of booking: ";
-        cin.getline(bookingdate,12);
-        date=ConvertDate(bookingdate);
-        dateval = DateValBooking(bookingdate);
-        datesyst = SystemsClockBooking(bookingdate);
+        cin.getline(datein,30);
+        datebuff = Buffer(datein,10);
+        if(datebuff!=0 && (dateval==0 || datesyst==0))
+                {
+                date=ConvertDate(datein);
+                dateval = DateValBooking(datein);
+                datesyst = SystemsClockBooking(datein);
+                }//end if
         }//end while
 
-while(starttime==0)
+while(starttime==0)   //While loop that controls validation to ensure that the start time entered is within the appropriate range
         {
         cout<<"\nEnter the start time for that day (7-19): ";
-        cin>>hour;
+        cin.getline(stime,3);
+        hour = atoi(stime);
         starttime = StartRange(hour);
         }//end while
 
-while(endtime==0)
+while(endtime==0)  //While loop that controls validation to ensure that the end time entered is within the appropriate range
         {
         cout<<"\nEnter the finish time for that day (7-19): ";
-        cin>>endhour;
+        cin.getline(etime,3);
+        endhour = atoi(etime);
         endtime = EndRange(endhour);
         }//end while
 
-while(endhour>=hour)
+while(endhour>=hour) //While loop that adds the booking to the schedule for the amount of hours entered
         {
         strcpy(booking[staff-1][date-1][hour-7],addref);
         hour = hour+1;
@@ -5856,34 +6479,53 @@ int find;
 int compare;
 char reference[3];
 int len;
+int position;
+
 
 itoa(ref, reference,10);//convers staff reference to a character
 
-len =  strlen(reference);
+len =  strlen(reference);  //strlen extracts the number of characetrs entered and stores it under the variable len
 
-
-ReadBackStaffFile();                 //Checks data has actally been entered
-if(len!=0)
+ReadBackStaffFile();
+if(len!=0)    //Checks data has actally been entered
         {
-        for(find=0;find<nsi;find++)                 //Looks through staff file
+        for(position=0;position<len;position++)
                 {
-                compare = strcmpi(reference,staffref[find]);
-                if(compare==0)                                  //Compares reference entered with those in the staff file
+                if(isdigit(reference[position]))
                         {
-                        stafffound=1;
+                        for(find=0;find<nsi;find++)  //Loops through staff file
+                                {
+                                compare = strcmpi(reference,staffref[find]); //Compares reference entered with those in the staff file
+                                if(compare==0) //If compare=0 then the staff reference entered is the same as one stored in the file
+                                        {
+                                        //Staff member exists
+                                        stafffound=1;
+                                        return stafffound;
+                                        }//end if
+                                        else
+                                                {
+                                                cout<<"\nStaff reference not found.";
+                                                }//end else
+                                }//end for
                         }//end if
-                }//end for
+                        else
+                                {
+                                cout<<"\nPlease ensure a number was entered for the staff reference.";
+                                getch();
+                                stafffound=0;
+                                return stafffound;
+                                }//end else
+                }//endrfor
         }//end if
-if(len==0)
-        {
-        cout<<"\nPlease enter staff reference.";
-        getch();
-        }//end if
+        else
+                {
+                cout<<"\nPlease enter staff reference.";
+                getch();
+                stafffound=0;
+                return stafffound;
+                }//end else
 
-if(stafffound!=1)
-        {
-        cout<<"\n Staff reference not found.";
-        }//end if
+
 return stafffound;
 }
 
@@ -5895,22 +6537,56 @@ int uniqueref=0;
 int find;
 int compare;
 char quote[3];
+int len;
+int position;
 
 itoa(quoter,quote,10); //converts quote reference to a character
 
 ReadBackQuotesFile();
-for (find = 0; find < nqi; find++)   //searches through all the quotes in the file
-	{
-	compare = strcmpi(quoteref[find], quote); //compares each quote reference in the file with the one entered
-	if (compare == 0)
-		{               //Quote reference has been found
-		uniqueref = 1;
-		} //endif found record
-	}//endfor
-if(uniqueref!=1)
+if(len!=0)
         {
-        cout<<"\n Quote reference not found.";
-        }
+        for(position=0;position<len;position++)
+                {
+                if(isdigit(quote[position]))
+                        {
+                        for (find = 0; find < nqi; find++)   //searches through all the quotes in the file
+                                {
+                                compare = strcmpi(quoteref[find], quote); //compares each quote reference in the file with the one entered
+                                if (compare == 0) //If compare=0 then the quote reference entered is the same as one stored in the file
+                                        {
+                                        //Quote reference has been found
+                                        uniqueref = 1;
+                                        return uniqueref;
+                                        } //endif found record
+                                        else
+                                                {
+                                                //If the quote reference entered is not the same as one stored in the file then the following error message is outputted
+                                                cout<<"\n Quote reference not found.";
+                                                getch();
+                                                uniqueref=0;
+                                                return uniqueref;
+                                                }//end else
+                                }//endfor
+                        }//endif
+                        else
+                                {
+                                //Error message outputted if something other than a number is entered
+                                cout<<"\nPlease ensure a number is entered for the quote reference.";
+                                getch();
+                                uniqueref=0;
+                                return uniqueref;
+                                }//end else
+                }//endfor
+        }//endif
+        else
+                {
+                //Error message outputted if nothing is entered
+                cout<<"\nPlease ensure a reference was entered.";
+                getch();
+                uniqueref=0;
+                return uniqueref;
+                }//end else
+
 return uniqueref;
 }
 
@@ -6015,7 +6691,7 @@ sscanf(&temptime[20],"%d", &yeart);
 sscanf(&temptime[4],"%3s", &monthchar); //extracts 3 characters only
 sscanf(&temptime[8],"%d", &dayst);
 
-
+//Converts month as string into an integer
 monthval = strcmpi(monthchar, "Jan");
 if(monthval==0)
         {
@@ -6079,7 +6755,7 @@ if(monthval==0)
         }//endif
 
 sscanf(&date[6],"%d", &year);
-sscanf(&date[4],"%d", &month);   //Extracts day, month and year from the date entered
+sscanf(&date[3],"%d", &month);   //Extracts day, month and year from the date entered
 sscanf(&date[0],"%d", &day);    
 
 if(year>yeart)
@@ -6116,6 +6792,7 @@ else
         }//end else
 if(valid!=1)
         {
+        //If date entered is before the date in the systems clock then the following error message is outputted
         cout<<"\nDate entered is not in the future.";
         }//end if
 return valid;
@@ -6126,15 +6803,56 @@ int StartRange(int stime)
 {
 //local variables
 int valid=0;
+int position;
+int len;
+char time[3];
 
-if(stime>=7 && stime<=19)  //Range check
+itoa(stime,time,10);
+
+len=strlen(time); //Extracts the number of characters stored
+
+if(len!=0) //Checks data has been entered
         {
-        valid=1;
+        //Loops through all the characters entered
+        for(position=0;position<len;position++)
+                {
+                //Checks input is a number
+                if(isdigit(time[position]))
+                        {
+                        //Range check
+                        if(stime>=7 && stime<=19)
+                                {
+                                valid=1;
+                                }//end if
+                                else
+                                        {
+                                        //If time entered is outside of the range then the following error message is outputted
+                                        cout<<"\n Enter a start time within the hours shown above.";
+                                        getch();
+                                        valid=0;
+                                        return valid;
+                                        }//end else
+                        }//endif
+                        else
+                                {
+                                //Error message is outputted is something other than a number is inputted
+                                cout<<"\nPlease ensure the time entered is a number.";
+                                getch();
+                                valid=0;
+                                return valid;
+                                }//end else
+                }//end for
         }//end if
-if(valid!=1)
-        {
-        cout<<"\n Enter a start time within the hours shown above.";
-        }//end if
+        else
+                {
+                //Error message outputted if no data has been entered
+                cout<<"\nPlease ensure a start time is entered.";
+                getch();
+                valid=0;
+                return valid;
+                }//end else
+
+
 return valid;
 }
 
@@ -6144,7 +6862,8 @@ int EndRange(int etime)
 //local variables
 int valid=0;
 
-if(etime>=7 && etime<=19)   //range check
+//Range check
+if(etime>=7 && etime<=19)
         {
         valid=1;
         }//end if
@@ -6154,6 +6873,7 @@ if(valid!=1)
         }//end if
 return valid;
 }
+
 // Allows the user to change the date of the booking - keeping hours at work the same
 int ChangeBooking()
 {
@@ -6172,58 +6892,80 @@ int starttime=0;
 int endtime=0;
 int qref=0;
 
+char sref[3];
+char stime[3];
+char etime[3];
+
+char datein[30];
+int datebuff=0;
+
+char newdatein[30];
+int newdatebuff=0;
+
 cout<<"\nChange date of booking";
 cout<<"\n**********************";
 ReadBackScheduleFile();
 
 //Validation upon entry for inputs
-while(staffref==0)
+while(staffref==0)    //While loop that controls validation to ensure that the staff reference entered exsits
         {
+        cin.get();
         cout<<"\nEnter staff member: ";
-        cin>>staff;
+        cin.getline(sref,3);
+        staff = atoi(sref);
         staffref = StaffRefCheck(staff);
         }//end while
 
-while(datevalold==0)
+while(datevalold==0 || datebuff==0)  //While loop that controls validation to ensure that the date entered is in the correct format: DD/MM/YYYY
         {
         cout<<"\n Enter old date of booking: ";
-        cin.getline(bookingdate,12);
-        date=ConvertDate(bookingdate);
-        datevalold = DateValBooking(bookingdate);
+        cin.getline(datein,30);
+        datebuff = Buffer(datein,10);
+        if(datebuff!=0 && datevalold==0)
+                {
+                date=ConvertDate(bookingdate); //Converts date entered into a number 1-366
+                datevalold = DateValBooking(datein);
+                }//endif
         }//end while
 
-while(starttime==0)
+while(starttime==0) //While loop that controls validation to ensure that the start time entered is within the appropriate range
         {
         cout<<"\n Enter old start time of booking(7-19): ";
-        cin>>hour;
+        cin.getline(stime,3);
+        hour = atoi(stime);
         starttime = StartRange(hour);
         }//end while
 
-while(endtime==0)
+while(endtime==0) //While loop that controls validation to ensure that the end time entered is within the appropriate range
         {
         cout<<"\n Enter old finishing time of booking(7-19): ";
-        cin>>endhour;
+        cin.getline(etime,3);
+        endhour = atoi(etime);
         endtime = EndRange(endhour);
         }//end while
 
-while(datevalnew==0)
+while(datevalnew==0 || newdatebuff==0) //While loop that controls validation to ensure that the date entered is in the correct format: DD/MM/YYYY
         {
         cout<<"\n Enter new date of booking: ";
-        cin.getline(newbookingdate,12);
-        newdate=ConvertDateNew(newbookingdate);
-        datevalnew = DateValBooking(newbookingdate);
+        cin.getline(newdatein,30);
+        newdatebuff = Buffer(newdatein,10);
+        if(newdatebuff!=0 && datevalnew==0)
+                {
+                newdate=ConvertDateNew(newdatein); //Converts date entered into a number 1-366
+                datevalnew = DateValBooking(newdatein);
+                }//endif
         }//end while
 
-while(qref==0)
+while(qref==0) //While loop that controls validation routines to ensure that the quote reference entered exists
         {
         cout<<"\nEnter quote reference: ";
-        cin>>quotenum;
-        itoa(quotenum,ref,10);
+        cin.getline(ref,3);
+        quotenum=atoi(ref);
         qref = QuoteRefCheckBooking(quotenum);
         }
 
 //Deletes old booking from the schedule
-while(endhour>=hour)
+while(endhour>=hour) //While loop that deletes the booking to the schedule for the amount of hours entered
         {
         strcpy(booking[staff-1][date-1][hour-7],"*");
         hour = hour+1;
@@ -6231,7 +6973,8 @@ while(endhour>=hour)
 
 //Adds amended booking to the schedule
 date = newdate;
-while(endhour>=hour)
+hour=atoi(stime);
+while(endhour>=hour)  //While loop that adds the booking to the schedule for the amount of hours entered
         {
         strcpy(booking[staff-1][date-1][hour-7],ref);
         hour=hour+1;
@@ -6251,41 +6994,56 @@ int staffref=0;
 int dateval=0;
 int starttime=0;
 int endtime=0;
+
+char sref[3];
+char stime[3];
+char etime[3];
+
+int datebuff=0;
+char datein[30];
 cout<<"\nDelete Booking";
 cout<<"\n**************";
 ReadBackScheduleFile();
 
 //Validates inputs upon entry
-while(staffref==0)
+while(staffref==0)   //While loop that controls validation to ensure that the staff reference entered exsits
         {
+        cin.get();
         cout<<"\nEnter staff reference: ";
-        cin>>staff;
+        cin.getline(sref,3);
+        staff = atoi(sref);
         staffref = StaffRefCheck(staff);
         }//end while
 
-while(dateval==0)
+while(dateval==0 || datebuff==0)  //While loop that controls validation to ensure that the date entered is in the correct format: DD/MM/YYYY
         {
         cout<<"\nEnter the date that the booking has been cancelled: ";
-        cin.getline(bookingdate,12);
-        date=ConvertDate(bookingdate);
-        dateval = DateValBooking(bookingdate);
+        cin.getline(datein,30);
+        datebuff = Buffer(datein,10);
+        if(datebuff!=0&&dateval==0)
+                {
+                date=ConvertDate(datein); //Converts date entered into a number 1-366
+                dateval = DateValBooking(datein);
+                }//endif
         }//end while
 
-while(starttime==0)
+while(starttime==0) //While loop that controls validation to ensure that the start time entered is within the appropriate range
         {
         cout<<"\nEnter the start time for the cancelled day (7-19): ";
-        cin>>hour;
+        cin.getline(stime,3);
+        hour = atoi(stime);
         starttime = StartRange(hour);
         }//end while
 
-while(endtime==0)
+while(endtime==0) //While loop that controls validation to ensure that the end time entered is within the appropriate range
         {
         cout<<"\nEnter the finish time for the cancelled day (7-19): ";
-        cin>>endhour;
+        cin.getline(etime,3);
+        endhour = atoi(etime);
         endtime = EndRange(endhour);
         }//end while
 
-while(endhour>=hour)
+while(endhour>=hour) //While loop that deletes the booking to the schedule for the amount of hours entered
         {
         strcpy(booking[staff-1][date-1][hour-7],"*");
         hour = hour+1;
@@ -6312,10 +7070,11 @@ ReWriteScheduleFile();
 return 0;
 }
 
-//While loop to output view schedule menu
+//This function determines whether or not the view schedule menu should be outputted to the screen
 int ViewSchedule()
 {
 int viewstatus=0;
+//While loop to output view schedule menu
 while(viewstatus != 4)
         {
         viewstatus = ViewScheduleMenu();
@@ -6324,10 +7083,11 @@ getch();
 return 0;
 }
 
-//Outputs view schedule menu
+//Outputs view schedule menu options to the user and allows them to choose one of them to run a specific function
 int ViewScheduleMenu()
 {
 int viewschedulechoice;
+//Outputs view schedule menu
 cout<<"\n \t View Schedules";
 cout<<"\n \t **************\n \n";
 cout<<"\n \t 1. View Staff 1";
@@ -6339,30 +7099,31 @@ cout<<"\n \t Enter choice: ";
 getch();
 cin>>viewschedulechoice;  //user input from menu choices
 clrscr();
-switch(viewschedulechoice)
+switch(viewschedulechoice) //Allows different menu options to be ran depending on the menu option entered by the user
         {
-        case 1:
+        case 1: //If viewschedulechoice=1 then the Staff1 function is ran
              {
              Staff1();
              break;
              }
-        case 2:
+        case 2:  //If viewschedulechoice=2 then the Staff2 function is ran
              {
              Staff2();
-             break;                   //Different functions that can be run depending on user input
+             break;
              }
 
-        case 3:
+        case 3: //If viewschedulechoice=1 then the TodaysWork function is ran
              {
              TodaysWork();
              break;
              }
-        case 4:
+        case 4: //If viewschedulechoice=1 then it returns to the schedule menu
              {
              break;
              }
-        default:  //If user enters a wrong digit following error message is outputted
+        default:
                {
+               //If user enters a wrong digit following error message is outputted
                cout<<"\nPlease enter a number between 1 and 4.";
                getch();
                break;
@@ -6391,7 +7152,7 @@ for(staff=0;staff<1;staff++) //Loops for staff member 1
                 DateOutput(date); //Function to output dates
                 for(hour=0;hour<13;hour++)
                         {
-                        cout<<"\t" <<booking[staff][date][hour];
+                        cout<<"\t" <<booking[staff][date][hour];  //Outputs * for no booking or quote reference to the screen
                         }//endfor - hour
                 }//endfor - date
         }// endfor - staff
@@ -6415,7 +7176,7 @@ for(staff=1;staff<2;staff++) //Loops for staff member 2
                 DateOutput(date); //Function to output dates
                 for(hour=0;hour<13;hour++)
                         {
-                        cout<<"\t" <<booking[staff][date][hour];
+                        cout<<"\t" <<booking[staff][date][hour];   //Outputs * for no booking or quote reference to the screen
                         }//endfor - hour
                 }//endfor - date
         }// endfor - staff
@@ -6583,6 +7344,7 @@ else
         leap=0;
         }
 
+//Converts month entered as a string to an integer
 monthval = strcmpi(monthchar, "Jan");
 if(monthval==0)
         {
@@ -6645,6 +7407,7 @@ if(monthval==0)
         monthint = 12;
         }//endif
 
+//Converts date to a number 1-366
 if(monthint==1)
         {
         value = dayst;
@@ -6746,20 +7509,20 @@ else
         }
 date=value-1;
 ReadBackScheduleFile();
-for(staff=0;staff<2;staff++)
+for(staff=0;staff<2;staff++) //Loops through the staff reference
         {
         cout<<"\nStaff Reference: "<<staff +1;
         cout<<"\n******************";
         cout<<"\n";
         for(hour=0;hour<13;hour++)
                 {
-                cout<<"\n"<<hour+7<<"\t";
+                cout<<"\n"<<hour+7<<"\t";  //Outputs working houts
                 cout<<booking[staff][date][hour];
                 if(strcmpi(tempquote,booking[staff][date][hour])!=0)  //If the quote reference is not the same as the temportary quote information is outputted else nothing is outputted
                         {
-                        LocateQuoteWork(booking[staff][date][hour]);
+                        LocateQuoteWork(booking[staff][date][hour]);  //Finds quote information to output
                         }//end if
-                        strcpy(tempquote,booking[staff][date][hour]);  //copies the quote reference to the temporary quote
+                        strcpy(tempquote,booking[staff][date][hour]);  //Copies the quote reference to the temporary quote
                 }//endfor - hour
         }// endfor - staff
 
@@ -6778,8 +7541,9 @@ ReadBackQuotesFile();
 for(find=0;find<nqi;find++) //searches through all the quotes in the file
         {
         compare = strcmpi(charref,quoteref[find]); //compares each quote reference with the one entered
-        if(compare==0)
+        if(compare==0)   //If compare=0 then the quote reference has been found in the file
                 {
+                //Outputs quote information to the screen
                 cout<<"\n Job Information";
                 cout<<"\n****************";
                 cout<<"\nQuote reference: "<<quoteref[find];
@@ -6808,8 +7572,9 @@ fin.get((char*)&a_cust,sizeof(a_cust));
 fin.close();
 
 compare=strcmpi(a_cust.flag,"0");        //Checks to see if the location in the file is empty
-if(compare!=0)                          //If location is occupied, customer information is outputted
+if(compare!=0)     //If compare!=0 then the location is occupied
         {
+        //Customer information is outputted
         cout<<"\nCustomer Name: "<<a_cust.title<<" "<< a_cust.fnamecust<<" "<<a_cust.lnamecust;
         cout<<"\nCustomer Mobile Number: "<<a_cust.telnocust;
         cout<"\n\n";
@@ -6820,6 +7585,8 @@ if(compare!=0)                          //If location is occupied, customer info
 getch();
 return 0;
 }
+
+//Reads all schedule from the file
 int ReadBackScheduleFile()
 {
 ifstream fin(FileName7, ios::in);
@@ -6838,6 +7605,7 @@ fin.close();
 return 0;
 }
 
+//Writes in new schedule information to the file
 int ReWriteScheduleFile()
 {
 ofstream fout(FileName7, ios::binary);
@@ -6857,6 +7625,7 @@ fout.close();
 return 0;
 }
 
+//Reads all links information from the file
 int ReadBackLinksFile()
 {
 int count;
@@ -6873,6 +7642,7 @@ fin.close();
 return 0;
 }
 
+//Writes in new links information to the file
 int ReWriteLinksFile()
 {
 int count;
@@ -6923,6 +7693,7 @@ if(month==2)
         value = day +31;
         }
 
+//Converts date entered into a number 1-366
 if(month>=3 && valid==1)
         {
         if(month==3)
@@ -7142,7 +7913,7 @@ return value;
 }
 
 
-
+//Function which takes an input and checks its of the correct length before allowing it to be passed to the validation function
 int Buffer(char buffer[30], int len)
 {
 int length;
@@ -7155,13 +7926,15 @@ if(length==len)
         }
 else
         {
-        cout<<"\n Please ensure that the input is of the appropriate length.";
+        cout<<"\nPlease ensure that the input is of the appropriate length.";
         valid=0;
         }
 
 getch();
 return valid;
-} 
+}
+
+
 
 
 
